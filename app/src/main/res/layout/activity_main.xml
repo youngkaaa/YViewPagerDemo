@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:id="@+id/bannerFrame"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+
+    <!--viewpager-->
+    <cn.youngkaaa.yviewpager.YViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:orientation="vertical"/>
+
+
+    <!--右下角的圆形指示器 即 1/5 1/3 之类的那些-->
+    <TextView
+        android:id="@+id/numIndicator"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="top|right"
+        android:layout_marginTop="18dp"
+        android:layout_marginRight="28dp"
+        android:background="@drawable/back_background"
+        android:gravity="center"
+        android:text="1/5"
+        android:textColor="#ffffff"
+        android:visibility="visible"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="14dp"
+        android:layout_gravity="bottom"
+        android:padding="8dp">
+
+        <Button
+            android:textAllCaps="false"
+            android:id="@+id/btnHorizontal"
+            android:layout_weight="1"
+            android:text="Horizontal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:textAllCaps="false"
+            android:id="@+id/btnVertical"
+            android:layout_weight="1"
+            android:text="Vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+
+</FrameLayout>
