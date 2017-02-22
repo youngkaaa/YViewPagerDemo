@@ -2,7 +2,7 @@
 YViewPager,support horizontal and vertical,based on `support.v4.view.ViewPager`
 
 ## 简介
-支持水平方向上滑动和竖直方向上的滑动，直接修改的官方提供的`ViewPager`的源码，注入了方向判断，使用起来和官方的`ViewPager`基本一样，还有监听事件也是一样的，支持`setOffscreenPageLimit()`可以放心滑动。
+支持水平方向上滑动和竖直方向上的滑动，直接修改的官方提供的`ViewPager`的源码，注入了方向判断，使用起来和官方的`ViewPager`基本一样，还有监听事件也是一样的，支持`setOffscreenPageLimit()`可以放心滑动，以及`TabLayout`等。
 
 ## 特性
 在官方原有特性下，新增加`direction`属性。可以通过两种方式来设置：
