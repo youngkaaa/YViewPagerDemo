@@ -46,6 +46,22 @@ mViewPager.setDirection(YViewPager.HORIZONTAL);
 
 如果你觉得本仓库对你有用的话请给个star表示鼓励吧
 
-对于`ViewPager`的源码简单分析可以看这里:[传送门1](http://youngkaaa.cn/2017/02/16/public/2017-2-16%20ViewPager%20-%20onMeasure()%E3%80%81onLayout()/) && [传送门2](http://youngkaaa.cn/2017/02/19/public/2017-2-17%20ViewPager%20-%20onInterceptTouchEvent,onTouchEvent/)
+具体的关于`ViewPager`的源码简单分析可以看我的博客
 
+# License
+```
+Copyright 2016 Kot32
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
 
