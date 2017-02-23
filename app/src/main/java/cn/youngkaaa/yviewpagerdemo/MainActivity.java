@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
         initData();
 
         mViewPager.setAdapter(new FragmentAdapter(getSupportFragmentManager()));
-        mViewPager.setCurrentItem(mCurrentItem);
         mViewPager.setCurrentItem(mCurrentPos);
 
         mViewPager.addOnPageChangeListener(new YViewPager.OnPageChangeListener() {
