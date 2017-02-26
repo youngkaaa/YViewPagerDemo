@@ -51,9 +51,16 @@ mViewPager.setDirection(YViewPager.HORIZONTAL);
 注意，设计的起始是想着在`YViewPager`一开始inflate时就应该确定了方向，如果在后期app运行时（即在`YViewPager`创建显示后）通过代码来修改方向的话，这种做法不推荐，因为`YViewPager`内部可能有很深View结构的`Fragment`，所以在此时修改`YViewPager`的`direction`的话，会通知刷新`YViewPager`，会造成顿时卡顿，所以不推荐此做法，但是不代表不可以这样做，如果您的需求确实是这样那么这样做也是可以的。
 
 
-## TODO
+## 版本
 
-这学期开学了在找实习,如果还有空余时间的话，会打算将`YViewPager`改造成可以`无限循环`的，因为我感觉官方做的这个缓存很不错。
+
+### v0.2
+
+加入循环属性，同样支持水平和竖直两个方向上的循环。
+
+### v0.1
+
+支持水平和竖直方向上得滑动切换
 
 ## 最后
 
@@ -61,7 +68,14 @@ mViewPager.setDirection(YViewPager.HORIZONTAL);
 
 最后附上运行图：
 
+
+>    v0.1
+
 ![](https://github.com/youngkaaa/YViewPagerDemo/blob/master/screens/record.gif)
+
+>    v0.2
+
+![](https://github.com/youngkaaa/YViewPagerDemo/blob/master/screens/record_circle.gif)
 
 如果你觉得本仓库对你有用的话请给个star表示鼓励吧
 
