@@ -54,9 +54,16 @@ you can change the direction by calling the `YViewPager.setDirection()`。
 
 Tip：It's not recommended that change the direction when your application is running,which include a inflated `YViewPager`,because at this time the `YViewPager` may included the Fragments,which may has the deeply view hierarchy,and when you call the `setDriection()` may invaliate the layout,so may cause the application ANR or bad layout.but it's just not recommended,not unsupport!
 
-## TODO
+## Version
 
-make this lib can swipe circulating!
+### v0.2
+
+add the `circulatory` property，which support the direction of horizontal and vertical  (`2017-2-26`)
+
+### v0.1
+
+support the direction of vertical and horizontal（`2017-2-22`）
+
 
 ## Finally
 
