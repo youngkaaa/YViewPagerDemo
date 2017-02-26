@@ -52,32 +52,34 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-
 public class YViewPager extends ViewGroup {
     private static final String TAG = "YViewPager";
     private static final boolean DEBUG = false;
-
     private static final boolean USE_CACHE = false;
-
     private static final int DEFAULT_OFFSCREEN_PAGES = 1;
     private static final int MAX_SETTLE_DURATION = 600; // ms
     private static final int MIN_DISTANCE_FOR_FLING = 25; // dips
-
     private static final int DEFAULT_GUTTER_SIZE = 16; // dips
-
     private static final int MIN_FLING_VELOCITY = 400; // dips
 
     private static final int[] LAYOUT_ATTRS = new int[]{
             android.R.attr.layout_gravity
     };
+    private static final int DEFAULT_OFFSCREEN_SCROLL_COUNT = 500;
 
     /**
      * Used to track what the expected number of items in the adapter should be.
      * If the app changes this when we don't expect it, we'll throw a big obnoxious exception.
      */
     private int mExpectedAdapterCount;
+
+
     private int mDestY;
     private int mVelocityY = 100;
+    private boolean isCirculatory = false;
+    private int mAdapterCirculatoryCount = DEFAULT_OFFSCREEN_SCROLL_COUNT;
+    private boolean isVertical = false;
+    private int mCurrentStartPos = 0;
 
     static class ItemInfo {
         Object object;
@@ -115,20 +117,15 @@ public class YViewPager extends ViewGroup {
 
     private final ArrayList<ItemInfo> mItems = new ArrayList<ItemInfo>();
     private final YViewPager.ItemInfo mTempItem = new YViewPager.ItemInfo();
-
     private final Rect mTempRect = new Rect();
-
     private YPagerAdapter mAdapter;
     private int mCurItem;   // Index of currently displayed page.
     private int mRestoredCurItem = -1;
     private Parcelable mRestoredAdapterState = null;
     private ClassLoader mRestoredClassLoader = null;
-
     private Scroller mScroller;
     private boolean mIsScrollStarted;
-
-    private YViewPager.PagerObserver mObserver;
-
+    private PagerObserver mObserver;
     private int mPageMargin;
     private Drawable mMarginDrawable;
 
@@ -219,8 +216,8 @@ public class YViewPager extends ViewGroup {
     private ArrayList<View> mDrawingOrderedChildren;
     private static final ViewPositionComparator sPositionComparator = new ViewPositionComparator();
 
-    public static final int VERTICAL=0;
-    public static final int HORIZONTAL=1;
+    public static final int VERTICAL = 0;
+    public static final int HORIZONTAL = 1;
 
     /**
      * Indicates that the pager is in an idle, settled state. The current page
@@ -238,6 +235,7 @@ public class YViewPager extends ViewGroup {
      */
     public static final int SCROLL_STATE_SETTLING = 2;
 
+
     private final Runnable mEndScrollRunnable = new Runnable() {
         @Override
         public void run() {
@@ -252,8 +250,6 @@ public class YViewPager extends ViewGroup {
 
     private int mScrollState = SCROLL_STATE_IDLE;
 
-
-    private boolean isVertical = false;
 
     /**
      * Callback interface for responding to changing state of the selected page.
@@ -333,7 +329,6 @@ public class YViewPager extends ViewGroup {
     public interface OnAdapterChangeListener {
         /**
          * Called when the adapter for the given view pager has changed.
-         *
          */
         void onAdapterChanged(YViewPager viewPager,
                               YPagerAdapter oldAdapter, YPagerAdapter newAdapter);
@@ -348,23 +343,27 @@ public class YViewPager extends ViewGroup {
 
     public YViewPager(Context context) {
         super(context);
-        initStyle(context,null);
+        initStyle(context, null);
         initViewPager();
     }
 
     public YViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initStyle(context,attrs);
+        initStyle(context, attrs);
         initViewPager();
     }
 
     private void initStyle(Context context, AttributeSet attrs) {
-        TypedArray array=context.obtainStyledAttributes(attrs,R.styleable.YViewPager);
-        int direction=array.getInt(R.styleable.YViewPager_orientation,HORIZONTAL);
-        if(direction==HORIZONTAL){
-            isVertical=false;
-        }else if(direction==VERTICAL){
-            isVertical=true;
+        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.YViewPager);
+        int direction = array.getInt(R.styleable.YViewPager_orientation, HORIZONTAL);
+        isCirculatory = array.getBoolean(R.styleable.YViewPager_circulatory, false);
+        mAdapterCirculatoryCount = array.getInt(R.styleable.YViewPager_circulationCount, DEFAULT_OFFSCREEN_SCROLL_COUNT);
+        mCurrentStartPos = mAdapterCirculatoryCount / 2;
+
+        if (direction == HORIZONTAL) {
+            isVertical = false;
+        } else if (direction == VERTICAL) {
+            isVertical = true;
         }
         array.recycle();
     }
@@ -449,7 +448,6 @@ public class YViewPager extends ViewGroup {
     }
 
 
-
     @Override
     protected void onDetachedFromWindow() {
         removeCallbacks(mEndScrollRunnable);
@@ -479,6 +477,7 @@ public class YViewPager extends ViewGroup {
      * @param adapter Adapter to use
      */
     public void setAdapter(YPagerAdapter adapter) {
+        Log.d(TAG, "setAdapter() in");
         if (mAdapter != null) {
             mAdapter.setViewPagerObserver(null);
             mAdapter.startUpdate(this);
@@ -489,14 +488,15 @@ public class YViewPager extends ViewGroup {
             mAdapter.finishUpdate(this);
             mItems.clear();
             removeNonDecorViews();
-            mCurItem = 0;
+//            mCurItem = 0;
+            mCurItem = isCirculatory ? getAdapterCount() / 2 : 0;
+            Log.d(TAG, "setAdapter() mCurItem1=>" + mCurItem);
             scrollTo(0, 0);
         }
 
         final YPagerAdapter oldAdapter = mAdapter;
         mAdapter = adapter;
         mExpectedAdapterCount = 0;
-
         if (mAdapter != null) {
             if (mObserver == null) {
                 mObserver = new PagerObserver();
@@ -505,7 +505,10 @@ public class YViewPager extends ViewGroup {
             mPopulatePending = false;
             final boolean wasFirstLayout = mFirstLayout;
             mFirstLayout = true;
-            mExpectedAdapterCount = mAdapter.getCount();
+            mExpectedAdapterCount = getAdapterCount();
+//            mExpectedAdapterCount = mAdapter.getCount();
+            mCurItem = isCirculatory ? getAdapterCount() / 2 : 0;
+            Log.d(TAG, "setAdapter() mCurItem2=>" + mCurItem);
             if (mRestoredCurItem >= 0) {
                 mAdapter.restoreState(mRestoredAdapterState, mRestoredClassLoader);
                 if (isVertical) {
@@ -535,6 +538,14 @@ public class YViewPager extends ViewGroup {
         }
     }
 
+    private int getAdapterCount() {
+        if (isCirculatory) {
+            return mAdapterCirculatoryCount;
+        } else {
+            return mAdapter.getCount();
+        }
+    }
+
     private void removeNonDecorViews() {
         for (int i = 0; i < getChildCount(); i++) {
             final View child = getChildAt(i);
@@ -560,7 +571,7 @@ public class YViewPager extends ViewGroup {
      *
      * @param listener listener to add
      */
-    public void addOnAdapterChangeListener( YViewPager.OnAdapterChangeListener listener) {
+    public void addOnAdapterChangeListener(YViewPager.OnAdapterChangeListener listener) {
         if (mAdapterChangeListeners == null) {
             mAdapterChangeListeners = new ArrayList<>();
         }
@@ -597,10 +608,23 @@ public class YViewPager extends ViewGroup {
      */
     public void setCurrentItem(int item) {
         mPopulatePending = false;
+        if (item >= mAdapter.getCount()) {
+            throw new IllegalArgumentException("adapter's count is" + mAdapter.getCount() + ",but you set the position" +
+                    "is:" + item + ",it bigger than the max count");
+        } else if (item < 0) {
+            throw new IllegalArgumentException("you set the position" +
+                    "is:" + item + ",it less than 0");
+        }
+        int newPos = 0;
+        if (mCurrentStartPos == 0) {  //init status
+            newPos = isCirculatory ? getAdapterCount() / 2 + item : item;
+        } else {   //already scrolled status
+            newPos = isCirculatory ? mCurrentStartPos + item : item;
+        }
         if (isVertical) {
-            setCurrentItemInternalVertical(item, !mFirstLayout, false);
+            setCurrentItemInternalVertical(newPos, !mFirstLayout, false);
         } else {
-            setCurrentItemInternalHorizontal(item, !mFirstLayout, false);
+            setCurrentItemInternalHorizontal(newPos, !mFirstLayout, false);
         }
     }
 
@@ -612,15 +636,29 @@ public class YViewPager extends ViewGroup {
      */
     public void setCurrentItem(int item, boolean smoothScroll) {
         mPopulatePending = false;
+        if (item >= mAdapter.getCount()) {
+            throw new IllegalArgumentException("adapter's count is:" + mAdapter.getCount() + ",but you set the position" +
+                    "is:" + item + ",it bigger than the max count");
+        } else if (item < 0) {
+            throw new IllegalArgumentException("you set the position" +
+                    "is:" + item + ",it less than 0");
+        }
+        int newPos = 0;
+        if (mCurrentStartPos == 0) {  //init status
+            newPos = isCirculatory ? getAdapterCount() / 2 + item : item;
+        } else {   //already scrolled status
+            newPos = isCirculatory ? mCurrentStartPos + item : item;
+        }
         if (isVertical) {
-            setCurrentItemInternalVertical(item, smoothScroll, false);
+            setCurrentItemInternalVertical(newPos, smoothScroll, false);
         } else {
-            setCurrentItemInternalHorizontal(item, smoothScroll, false);
+            setCurrentItemInternalHorizontal(newPos, smoothScroll, false);
         }
     }
 
     public int getCurrentItem() {
-        return mCurItem;
+        int finalPos = isCirculatory ? mCurItem % mAdapter.getCount() : mCurItem;
+        return finalPos;
     }
 
     void setCurrentItemInternalHorizontal(int item, boolean smoothScroll, boolean always) {
@@ -632,7 +670,7 @@ public class YViewPager extends ViewGroup {
     }
 
     void setCurrentItemInternalHorizontal(int item, boolean smoothScroll, boolean always, int velocity) {
-        if (mAdapter == null || mAdapter.getCount() <= 0) {
+        if (mAdapter == null || getAdapterCount() <= 0) {
             setScrollingCacheEnabled(false);
             return;
         }
@@ -643,8 +681,8 @@ public class YViewPager extends ViewGroup {
 
         if (item < 0) {
             item = 0;
-        } else if (item >= mAdapter.getCount()) {
-            item = mAdapter.getCount() - 1;
+        } else if (item >= getAdapterCount()) {
+            item = getAdapterCount() - 1;
         }
         final int pageLimit = mOffscreenPageLimit;
         if (item > (mCurItem + pageLimit) || item < (mCurItem - pageLimit)) {
@@ -672,7 +710,7 @@ public class YViewPager extends ViewGroup {
     }
 
     void setCurrentItemInternalVertical(int item, boolean smoothScroll, boolean always, int velocity) {
-        if (mAdapter == null || mAdapter.getCount() <= 0) {
+        if (mAdapter == null || getAdapterCount() <= 0) {
             setScrollingCacheEnabled(false);
             return;
         }
@@ -683,8 +721,8 @@ public class YViewPager extends ViewGroup {
 
         if (item < 0) {
             item = 0;
-        } else if (item >= mAdapter.getCount()) {
-            item = mAdapter.getCount() - 1;
+        } else if (item >= getAdapterCount()) {
+            item = getAdapterCount() - 1;
         }
         final int pageLimit = mOffscreenPageLimit;
         if (item > (mCurItem + pageLimit) || item < (mCurItem - pageLimit)) {
@@ -1107,12 +1145,19 @@ public class YViewPager extends ViewGroup {
         ViewCompat.postInvalidateOnAnimation(this);
     }
 
+    private int mTotalNum = Integer.MAX_VALUE;
 
     ItemInfo addNewItem(int position, int index) {
+        int newPos = position % mAdapter.getCount();
+        Log.d(TAG, "addNewItem newPos=>" + newPos + ",position=>" + position);
+        if (newPos == 0) {
+            mCurrentStartPos = position;
+            Log.d(TAG, "addNewItem mCurrentStartPos=>" + mCurrentStartPos);
+        }
         ItemInfo ii = new ItemInfo();
         ii.position = position;
-        ii.object = mAdapter.instantiateItem(this, position);
-        ii.widthFactor = mAdapter.getPageWidth(position);
+        ii.object = mAdapter.instantiateItem(this, newPos);
+        ii.widthFactor = mAdapter.getPageWidth(newPos);
         if (index < 0 || index >= mItems.size()) {
             mItems.add(ii);
         } else {
@@ -1124,7 +1169,7 @@ public class YViewPager extends ViewGroup {
     void dataSetChanged() {
         // This method only gets called if our observer is attached, so mAdapter is non-null.
 
-        final int adapterCount = mAdapter.getCount();
+        final int adapterCount = getAdapterCount();
         mExpectedAdapterCount = adapterCount;
         boolean needPopulate = mItems.size() < mOffscreenPageLimit * 2 + 1
                 && mItems.size() < adapterCount;
@@ -1205,7 +1250,6 @@ public class YViewPager extends ViewGroup {
 
 
     void populateHorizontal(int newCurrentItem) {
-        // TODO: 2017/2/14
         ItemInfo oldCurInfo = null;
         if (mCurItem != newCurrentItem) {
             oldCurInfo = infoForPosition(mCurItem);
@@ -1216,7 +1260,6 @@ public class YViewPager extends ViewGroup {
             sortChildDrawingOrder();
             return;
         }
-
 
         // Bail now if we are waiting to populate.  This is to hold off
         // on creating views from the time the user releases their finger to
@@ -1236,11 +1279,11 @@ public class YViewPager extends ViewGroup {
         }
 
         mAdapter.startUpdate(this);
-
         final int pageLimit = mOffscreenPageLimit;
-        final int startPos = Math.max(0, mCurItem - pageLimit);
 
-        final int N = mAdapter.getCount();
+        //calculate the startPos,and the for-calculating while do when pos>=startPos
+        int startPos = Math.max(0, mCurItem - pageLimit);
+        final int N = getAdapterCount();
         final int endPos = Math.min(N - 1, mCurItem + pageLimit);
         if (N != mExpectedAdapterCount) {
             String resName;
@@ -1270,21 +1313,27 @@ public class YViewPager extends ViewGroup {
             }
         }
 
+        //when we doesn't find the cached-item from the mItems
+        //this means that doesn't cached this page,so we add it to mItems
         if (curItem == null && N > 0) {
+            Log.d(TAG, "populateHorizontal() mCurItem=>" + mCurItem);
             curItem = addNewItem(mCurItem, curIndex);
         }
 
         // Fill 3x the available width or up to the number of offscreen
         // pages requested to either side, whichever is larger.
         // If we have no current item we have no work to do.
-
         if (curItem != null) {
             float extraWidthLeft = 0.f;
+            //curIndex is the pos of the current page.
+            //we let it -1 means that we calculate from this page to it's left pages
             int itemIndex = curIndex - 1;
             ItemInfo ii = itemIndex >= 0 ? mItems.get(itemIndex) : null;
             final int clientWidth = getClientWidth();
 
-            // TODO: 2017/2/16 getPaddingLeft
+            //normally the code : 2.f-curItem.widthFactor may equals the value of 1.f
+            //and the (float) getPaddingLeft() / (float) clientWidth always is 0.f
+            //so the leftWidthNeeded always is 1.0,which means that we at least calculate one page from current page to left
             final float leftWidthNeeded = clientWidth <= 0 ? 0 :
                     2.f - curItem.widthFactor + (float) getPaddingLeft() / (float) clientWidth;
 
@@ -1433,7 +1482,7 @@ public class YViewPager extends ViewGroup {
         final int pageLimit = mOffscreenPageLimit;
         final int startPos = Math.max(0, mCurItem - pageLimit);
 
-        final int N = mAdapter.getCount();
+        final int N = getAdapterCount();
         final int endPos = Math.min(N - 1, mCurItem + pageLimit);
         if (N != mExpectedAdapterCount) {
             String resName;
@@ -1596,7 +1645,7 @@ public class YViewPager extends ViewGroup {
 
 
     private void calculatePageOffsetsHorizontal(ItemInfo curItem, int curIndex, ItemInfo oldCurInfo) {
-        final int N = mAdapter.getCount();
+        final int N = getAdapterCount();
         final int width = getClientWidth();
         final float marginOffset = width > 0 ? (float) mPageMargin / width : 0;
 
@@ -1687,7 +1736,7 @@ public class YViewPager extends ViewGroup {
     }
 
     private void calculatePageOffsetsVertical(ItemInfo curItem, int curIndex, ItemInfo oldCurInfo) {
-        final int N = mAdapter.getCount();
+        final int N = getAdapterCount();
         final int height = getClientHeight();
         final float marginOffset = height > 0 ? (float) mPageMargin / height : 0;
 
@@ -1876,6 +1925,10 @@ public class YViewPager extends ViewGroup {
             lp.needsMeasure = true;
             addViewInLayout(child, index, params);
         } else {
+            ViewParent parent = child.getParent();
+            if (parent != null) {
+                ((ViewGroup) parent).removeView(child);
+            }
             super.addView(child, index, params);
         }
 
@@ -2253,7 +2306,6 @@ public class YViewPager extends ViewGroup {
     }
 
 
-
     @Override
     public void computeScroll() {
         mIsScrollStarted = true;
@@ -2327,13 +2379,13 @@ public class YViewPager extends ViewGroup {
         return true;
     }
 
-    public void setDirection(int direction){
-        if(direction==HORIZONTAL && isVertical){
-            isVertical=false;
-        }else if(direction==VERTICAL && !isVertical){
-            isVertical=true;
+    public void setDirection(int direction) {
+        if (direction == HORIZONTAL && isVertical) {
+            isVertical = false;
+        } else if (direction == VERTICAL && !isVertical) {
+            isVertical = true;
         }
-        postInvalidate();
+        requestLayout();
     }
 
 
@@ -2519,36 +2571,38 @@ public class YViewPager extends ViewGroup {
 
 
     private void dispatchOnPageScrolled(int position, float offset, int offsetPixels) {
+        int newPosition=isCirculatory?position%mAdapter.getCount():position;
         if (mOnPageChangeListener != null) {
-            mOnPageChangeListener.onPageScrolled(position, offset, offsetPixels);
+            mOnPageChangeListener.onPageScrolled(newPosition, offset, offsetPixels);
         }
         if (mOnPageChangeListeners != null) {
             for (int i = 0, z = mOnPageChangeListeners.size(); i < z; i++) {
                 OnPageChangeListener listener = mOnPageChangeListeners.get(i);
                 if (listener != null) {
-                    listener.onPageScrolled(position, offset, offsetPixels);
+                    listener.onPageScrolled(newPosition, offset, offsetPixels);
                 }
             }
         }
         if (mInternalPageChangeListener != null) {
-            mInternalPageChangeListener.onPageScrolled(position, offset, offsetPixels);
+            mInternalPageChangeListener.onPageScrolled(newPosition, offset, offsetPixels);
         }
     }
 
     private void dispatchOnPageSelected(int position) {
+        int newPosition=isCirculatory?position%mAdapter.getCount():position;
         if (mOnPageChangeListener != null) {
-            mOnPageChangeListener.onPageSelected(position);
+            mOnPageChangeListener.onPageSelected(newPosition);
         }
         if (mOnPageChangeListeners != null) {
             for (int i = 0, z = mOnPageChangeListeners.size(); i < z; i++) {
                 OnPageChangeListener listener = mOnPageChangeListeners.get(i);
                 if (listener != null) {
-                    listener.onPageSelected(position);
+                    listener.onPageSelected(newPosition);
                 }
             }
         }
         if (mInternalPageChangeListener != null) {
-            mInternalPageChangeListener.onPageSelected(position);
+            mInternalPageChangeListener.onPageSelected(newPosition);
         }
     }
 
@@ -2568,7 +2622,6 @@ public class YViewPager extends ViewGroup {
             mInternalPageChangeListener.onPageScrollStateChanged(state);
         }
     }
-
 
 
     private void completeScrollHorizontal(boolean postEvents) {
@@ -2869,7 +2922,7 @@ public class YViewPager extends ViewGroup {
             return false;
         }
 
-        if (mAdapter == null || mAdapter.getCount() == 0) {
+        if (mAdapter == null || getAdapterCount() == 0) {
             // Nothing to present or scroll; nothing to touch.
             return false;
         }
@@ -3077,7 +3130,7 @@ public class YViewPager extends ViewGroup {
             leftBound = firstItem.offset * width;
         }
 
-        if (lastItem.position != mAdapter.getCount() - 1) {
+        if (lastItem.position != getAdapterCount() - 1) {
             rightAbsolute = false;
             rightBound = lastItem.offset * width;
         }
@@ -3125,7 +3178,7 @@ public class YViewPager extends ViewGroup {
             topBound = firstItem.offset * height;
         }
 
-        if (lastItem.position != mAdapter.getCount() - 1) {
+        if (lastItem.position != getAdapterCount() - 1) {
             bottomAbsolute = false;
             bottomBound = lastItem.offset * height;
         }
@@ -3294,8 +3347,8 @@ public class YViewPager extends ViewGroup {
         final int overScrollMode = getOverScrollMode();
         if (overScrollMode == View.OVER_SCROLL_ALWAYS
                 || (overScrollMode == View.OVER_SCROLL_IF_CONTENT_SCROLLS
-                && mAdapter != null && mAdapter.getCount() > 1)) {
-            if (!isVertical&&!mLeftEdge.isFinished()) {
+                && mAdapter != null && getAdapterCount() > 1)) {
+            if (!isVertical && !mLeftEdge.isFinished()) {
                 final int restoreCount = canvas.save();
                 final int height = getHeight() - getPaddingTop() - getPaddingBottom();
                 final int width = getWidth();
@@ -3304,16 +3357,16 @@ public class YViewPager extends ViewGroup {
                 mLeftEdge.setSize(height, width);
                 needsInvalidate |= mLeftEdge.draw(canvas);
                 canvas.restoreToCount(restoreCount);
-            }else if (isVertical&&!mTopEdge.isFinished()) {
+            } else if (isVertical && !mTopEdge.isFinished()) {
                 final int restoreCount = canvas.save();
                 final int height = getHeight();
-                final int width = getWidth()-getPaddingLeft()-getPaddingRight();
+                final int width = getWidth() - getPaddingLeft() - getPaddingRight();
                 canvas.translate(getPaddingLeft(), mFirstOffset * height);
                 mTopEdge.setSize(width, height);
                 needsInvalidate |= mTopEdge.draw(canvas);
                 canvas.restoreToCount(restoreCount);
             }
-            if (!isVertical&&!mRightEdge.isFinished()) {
+            if (!isVertical && !mRightEdge.isFinished()) {
                 final int restoreCount = canvas.save();
                 final int width = getWidth();
                 final int height = getHeight() - getPaddingTop() - getPaddingBottom();
@@ -3323,20 +3376,20 @@ public class YViewPager extends ViewGroup {
                 mRightEdge.setSize(height, width);
                 needsInvalidate |= mRightEdge.draw(canvas);
                 canvas.restoreToCount(restoreCount);
-            }else if (isVertical&&!mBottomEdge.isFinished()) {
+            } else if (isVertical && !mBottomEdge.isFinished()) {
                 final int restoreCount = canvas.save();
-                final int width = getWidth()-getPaddingLeft()-getPaddingRight();
+                final int width = getWidth() - getPaddingLeft() - getPaddingRight();
                 final int height = getHeight();
-                canvas.rotate(180,width,0);
-                canvas.translate(width-getPaddingLeft(), -(mLastOffset + 1) * height);
-                mBottomEdge.setSize(width,height);
+                canvas.rotate(180, width, 0);
+                canvas.translate(width - getPaddingLeft(), -(mLastOffset + 1) * height);
+                mBottomEdge.setSize(width, height);
                 needsInvalidate |= mBottomEdge.draw(canvas);
                 canvas.restoreToCount(restoreCount);
             }
-        } else if(!isVertical){
+        } else if (!isVertical) {
             mLeftEdge.finish();
             mRightEdge.finish();
-        }else if(isVertical){
+        } else if (isVertical) {
             mTopEdge.finish();
             mBottomEdge.finish();
         }
@@ -3815,7 +3868,7 @@ public class YViewPager extends ViewGroup {
     }
 
     boolean pageRight() {
-        if (mAdapter != null && mCurItem < (mAdapter.getCount() - 1)) {
+        if (mAdapter != null && mCurItem < (getAdapterCount() - 1)) {
             setCurrentItem(mCurItem + 1, true);
             return true;
         }
@@ -3970,7 +4023,7 @@ public class YViewPager extends ViewGroup {
             recordCompat.setScrollable(canScroll());
             if (event.getEventType() == AccessibilityEventCompat.TYPE_VIEW_SCROLLED
                     && mAdapter != null) {
-                recordCompat.setItemCount(mAdapter.getCount());
+                recordCompat.setItemCount(getAdapterCount());
                 recordCompat.setFromIndex(mCurItem);
                 recordCompat.setToIndex(mCurItem);
             }
@@ -4014,7 +4067,7 @@ public class YViewPager extends ViewGroup {
         }
 
         private boolean canScroll() {
-            return (mAdapter != null) && (mAdapter.getCount() > 1);
+            return (mAdapter != null) && (getAdapterCount() > 1);
         }
     }
 

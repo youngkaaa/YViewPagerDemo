@@ -298,7 +298,7 @@ public abstract class YPagerAdapter{
         mObservable.unregisterObserver(observer);
     }
 
-    void setViewPagerObserver(DataSetObserver observer) {
+    public void setViewPagerObserver(DataSetObserver observer) {
         synchronized (this) {
             mViewPagerObserver = observer;
         }

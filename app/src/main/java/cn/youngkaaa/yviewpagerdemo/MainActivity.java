@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private int mCurrentItem=0;
     private Button mButtonHorizontal;
     private Button mButtonVertical;
-    private int mCurrentPos=3;
+    private int mCurrentPos=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
         initData();
 
         mViewPager.setAdapter(new FragmentAdapter(getSupportFragmentManager()));
-        mViewPager.setCurrentItem(mCurrentPos);
 
+        mViewPager.setPageMargin(10);
         mViewPager.addOnPageChangeListener(new YViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -155,5 +155,7 @@ public class MainActivity extends AppCompatActivity {
         public int getCount() {
             return mFragments.size();
         }
+
+
     }
 }

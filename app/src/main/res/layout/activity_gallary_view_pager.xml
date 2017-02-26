@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_gallary_view_pager"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    tools:context="cn.youngkaaa.yviewpagerdemo.GallaryViewPager">
+
+    <cn.youngkaaa.yviewpager.YViewPager
+        android:id="@+id/viewPagerGallary"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="48dp"
+        android:layout_marginBottom="48dp"
+        android:clipChildren="false"
+        app:orientation="vertical">
+    </cn.youngkaaa.yviewpager.YViewPager>
+
+</RelativeLayout>

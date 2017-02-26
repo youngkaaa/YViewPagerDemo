@@ -57,7 +57,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import cn.youngkaaa.yviewpager.YPagerAdapter;
-import cn.youngkaaa.yviewpager.YViewPager1;
 
 /**
  * Layout manager that allows the user to flip left and right
