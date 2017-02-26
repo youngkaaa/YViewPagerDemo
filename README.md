@@ -3,6 +3,25 @@ YViewPager,support horizontal and vertical,based on `support.v4.view.ViewPager`
 
 [中文版点这里](https://github.com/youngkaaa/YViewPagerDemo/blob/master/README_CH.md)
 
+## Usage
+
+### Gradle
+
+```
+compile 'cn.youngkaaa:yviewpager:0.1.1'
+```
+
+### Maven
+
+```
+<dependency>
+  <groupId>cn.youngkaaa</groupId>
+  <artifactId>yviewpager</artifactId>
+  <version>0.1.1</version>
+  <type>pom</type>
+</dependency>
+```
+
 ## Intro
 The `YViewPager` is modified from the official `support.v4.view.ViewPager`,which support the direction of horizontal and vertical(new direction).You can use this lib just like the official `support.v4.view.ViewPager`,include the features of  `setPageTransformer()`、`addOnPageChangeListener()`、`setOffscreenPageLimit()` and so on,And also supported the `TabLayout`.
 
