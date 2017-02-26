@@ -71,7 +71,14 @@ Because the `FragmentPagerAdapter` 、`FragmentStatePagerAdapter` and `PagerAdap
 
 The running screenshot：
 
+>    v0.1
+
 ![](https://github.com/youngkaaa/YViewPagerDemo/blob/master/screens/record.gif)
+
+>    v0.2
+
+![](https://github.com/youngkaaa/YViewPagerDemo/blob/master/screens/record_circle.gif)
+
 
 If you think this lib help you,you can give me a star to encourage me! thanks a lot
 
