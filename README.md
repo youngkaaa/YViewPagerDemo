@@ -3,6 +3,25 @@ YViewPager,support horizontal and vertical,based on `support.v4.view.ViewPager`
 
 [中文版点这里](https://github.com/youngkaaa/YViewPagerDemo/blob/master/README_CH.md)
 
+## Usage
+
+### Gradle
+
+```
+compile 'cn.youngkaaa:yviewpager:0.1.1'
+```
+
+### Maven
+
+```
+<dependency>
+  <groupId>cn.youngkaaa</groupId>
+  <artifactId>yviewpager</artifactId>
+  <version>0.1.1</version>
+  <type>pom</type>
+</dependency>
+```
+
 ## Intro
 The `YViewPager` is modified from the official `support.v4.view.ViewPager`,which support the direction of horizontal and vertical(new direction).You can use this lib just like the official `support.v4.view.ViewPager`,include the features of  `setPageTransformer()`、`addOnPageChangeListener()`、`setOffscreenPageLimit()` and so on,And also supported the `TabLayout`.
 
@@ -48,4 +67,24 @@ The running screenshot：
 ![](https://github.com/youngkaaa/YViewPagerDemo/blob/master/screens/record.gif)
 
 If you think this lib help you,you can give me a star to encourage me! thanks a lot
+
+# License
+```
+Copyright 2017 youngkaaa
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+```
+
+
 
