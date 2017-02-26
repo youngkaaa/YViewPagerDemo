@@ -1,6 +1,25 @@
 # YViewPagerDemo
 YViewPager,support horizontal and vertical,based on `support.v4.view.ViewPager`
 
+## 使用
+
+### Gradle
+
+```
+compile 'cn.youngkaaa:yviewpager:0.1.1'
+```
+
+### Maven
+
+```
+<dependency>
+  <groupId>cn.youngkaaa</groupId>
+  <artifactId>yviewpager</artifactId>
+  <version>0.1.1</version>
+  <type>pom</type>
+</dependency>
+```
+
 ## 简介
 支持水平方向上滑动和竖直方向上的滑动，直接修改的官方提供的`ViewPager`的源码，注入了方向判断，使用起来和官方的`ViewPager`基本一样，还有监听事件也是一样的，支持`setOffscreenPageLimit()`可以放心滑动，以及`TabLayout`等。
 
