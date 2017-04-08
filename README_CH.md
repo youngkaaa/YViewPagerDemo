@@ -6,7 +6,7 @@ YViewPager,support horizontal and vertical,based on `support.v4.view.ViewPager`
 ### Gradle
 
 ```
-compile 'cn.youngkaaa:yviewpager:0.2'
+compile 'cn.youngkaaa:yviewpager:0.3'
 ```
 
 ### Maven
@@ -75,6 +75,9 @@ mViewPager.setDirection(YViewPager.HORIZONTAL);
 
 ## 版本
 
+### v0.3
+
+minSdkVersion调整到14
 
 ### v0.2
 
