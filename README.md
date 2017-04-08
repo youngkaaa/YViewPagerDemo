@@ -81,6 +81,11 @@ sorry,the property of `circulatory` do not support to change by using java code.
 
 ## Version
 
+
+### v0.3
+
+minSdkVersion to 14
+
 ### v0.2
 
 add the `circulatory` property，which support the direction of horizontal and vertical  (`2017-2-26`)
