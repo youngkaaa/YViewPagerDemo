@@ -6,7 +6,7 @@ YViewPager,support horizontal and vertical,based on `support.v4.view.ViewPager`
 ### Gradle
 
 ```
-compile 'cn.youngkaaa:yviewpager:0.1.1'
+compile 'cn.youngkaaa:yviewpager:0.3'
 ```
 
 ### Maven
@@ -15,7 +15,7 @@ compile 'cn.youngkaaa:yviewpager:0.1.1'
 <dependency>
   <groupId>cn.youngkaaa</groupId>
   <artifactId>yviewpager</artifactId>
-  <version>0.1.1</version>
+  <version>0.2</version>
   <type>pom</type>
 </dependency>
 ```
@@ -24,9 +24,12 @@ compile 'cn.youngkaaa:yviewpager:0.1.1'
 支持水平方向上滑动和竖直方向上的滑动，直接修改的官方提供的`ViewPager`的源码，注入了方向判断，使用起来和官方的`ViewPager`基本一样，还有监听事件也是一样的，支持`setOffscreenPageLimit()`可以放心滑动，以及`TabLayout`等。
 
 ## 特性
+
+### 方向
+
 在官方原有特性下，新增加`direction`属性。可以通过两种方式来设置：
 
-### xml
+#### xml
 
 ```
 <cn.youngkaaa.yviewpager.YViewPager
@@ -38,7 +41,7 @@ compile 'cn.youngkaaa:yviewpager:0.1.1'
 
 就像上面这样，只需要设置`app:orientation`属性，该属性可选值为:`vertical`和`horizontal`，分别代表竖直方向上滑动和水平方向上滑动。
 
-### java代码
+#### java代码
 
 ```
 mViewPager.setDirection(YViewPager.VERTICAL);
@@ -50,10 +53,39 @@ mViewPager.setDirection(YViewPager.HORIZONTAL);
 具体意思同上
 注意，设计的起始是想着在`YViewPager`一开始inflate时就应该确定了方向，如果在后期app运行时（即在`YViewPager`创建显示后）通过代码来修改方向的话，这种做法不推荐，因为`YViewPager`内部可能有很深View结构的`Fragment`，所以在此时修改`YViewPager`的`direction`的话，会通知刷新`YViewPager`，会造成顿时卡顿，所以不推荐此做法，但是不代表不可以这样做，如果您的需求确实是这样那么这样做也是可以的。
 
+### 循环滚动
 
-## TODO
+在`v1.2`版本开始增添了`circulatory`属性，你可以这样使用：
 
-这学期开学了在找实习,如果还有空余时间的话，会打算将`YViewPager`改造成可以`无限循环`的，因为我感觉官方做的这个缓存很不错。
+#### xml
+
+```
+<cn.youngkaaa.yviewpager.YViewPager
+  android:id="@+id/viewpager1"
+  android:layout_width="match_parent"
+  android:layout_height="188dp"
+  app:circulatory="true"
+  app:orientation="horizontal"/>
+```
+是的，就只需要一句代码就可以了。
+
+#### java
+
+对不起，暂时不支持使用java代码动态修改`circulatory`属性。因为一般循环与否都是在xml中提前决定好的，所以就仅仅支持xml修改
+
+## 版本
+
+### v0.3
+
+minSdkVersion调整到14
+
+### v0.2
+
+加入循环属性，同样支持水平和竖直两个方向上的循环。
+
+### v0.1
+
+支持水平和竖直方向上得滑动切换
 
 ## 最后
 
@@ -61,7 +93,14 @@ mViewPager.setDirection(YViewPager.HORIZONTAL);
 
 最后附上运行图：
 
+
+>    v0.1
+
 ![](https://github.com/youngkaaa/YViewPagerDemo/blob/master/screens/record.gif)
+
+>    v0.2
+
+![](https://github.com/youngkaaa/YViewPagerDemo/blob/master/screens/record_circle.gif)
 
 如果你觉得本仓库对你有用的话请给个star表示鼓励吧
 

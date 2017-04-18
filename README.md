@@ -8,7 +8,7 @@ YViewPager,support horizontal and vertical,based on `support.v4.view.ViewPager`
 ### Gradle
 
 ```
-compile 'cn.youngkaaa:yviewpager:0.1.1'
+compile 'cn.youngkaaa:yviewpager:0.3'
 ```
 
 ### Maven
@@ -17,7 +17,7 @@ compile 'cn.youngkaaa:yviewpager:0.1.1'
 <dependency>
   <groupId>cn.youngkaaa</groupId>
   <artifactId>yviewpager</artifactId>
-  <version>0.1.1</version>
+  <version>0.2</version>
   <type>pom</type>
 </dependency>
 ```
@@ -27,9 +27,12 @@ The `YViewPager` is modified from the official `support.v4.view.ViewPager`,which
 
 
 ## Feature
+
+### Direction
+
 On the base of the `support.v4.view.ViewPager`,add the property of `direction`. You can use it by：
 
-### xml
+#### xml
 
 ```
 <cn.youngkaaa.yviewpager.YViewPager
@@ -42,7 +45,7 @@ On the base of the `support.v4.view.ViewPager`,add the property of `direction`. 
 just like the above xml.you can add the property `app:orientation` in `YViewPager` tag, the value of this property is `horizontal` and `vertical`.
 
 
-### java code
+#### java code
 ```
 mViewPager.setDirection(YViewPager.VERTICAL);
 
@@ -54,9 +57,43 @@ you can change the direction by calling the `YViewPager.setDirection()`。
 
 Tip：It's not recommended that change the direction when your application is running,which include a inflated `YViewPager`,because at this time the `YViewPager` may included the Fragments,which may has the deeply view hierarchy,and when you call the `setDriection()` may invaliate the layout,so may cause the application ANR or bad layout.but it's just not recommended,not unsupport!
 
-## TODO
+### Circulatory
 
-make this lib can swipe circulating!
+in `v1.2`,add the property of `circulatory`.you can use it by:
+
+#### xml
+
+```
+<cn.youngkaaa.yviewpager.YViewPager
+  android:id="@+id/viewpager1"
+  android:layout_width="match_parent"
+  android:layout_height="188dp"
+  app:circulatory="true"
+  app:orientation="horizontal"/>
+```
+
+yeah,you just need to add one line.
+
+#### java
+
+sorry,the property of `circulatory` do not support to change by using java code.
+
+
+## Version
+
+
+### v0.3
+
+minSdkVersion to 14
+
+### v0.2
+
+add the `circulatory` property，which support the direction of horizontal and vertical  (`2017-2-26`)
+
+### v0.1
+
+support the direction of vertical and horizontal（`2017-2-22`）
+
 
 ## Finally
 
@@ -64,7 +101,14 @@ Because the `FragmentPagerAdapter` 、`FragmentStatePagerAdapter` and `PagerAdap
 
 The running screenshot：
 
+>    v0.1
+
 ![](https://github.com/youngkaaa/YViewPagerDemo/blob/master/screens/record.gif)
+
+>    v0.2
+
+![](https://github.com/youngkaaa/YViewPagerDemo/blob/master/screens/record_circle.gif)
+
 
 If you think this lib help you,you can give me a star to encourage me! thanks a lot
 
