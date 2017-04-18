@@ -6,7 +6,7 @@ YViewPager,support horizontal and vertical,based on `support.v4.view.ViewPager`
 ### Gradle
 
 ```
-compile 'cn.youngkaaa:yviewpager:0.3'
+compile 'cn.youngkaaa:yviewpager:0.4'
 ```
 
 ### Maven
@@ -15,7 +15,7 @@ compile 'cn.youngkaaa:yviewpager:0.3'
 <dependency>
   <groupId>cn.youngkaaa</groupId>
   <artifactId>yviewpager</artifactId>
-  <version>0.2</version>
+  <version>0.4</version>
   <type>pom</type>
 </dependency>
 ```
@@ -75,9 +75,17 @@ mViewPager.setDirection(YViewPager.HORIZONTAL);
 
 ## 版本
 
+### v0.4
+
+更新yViewPager结构为继承自ViewPager,用以可以和更多的库组合使用，比如这个优秀的库[VerticalTabLayout](https://github.com/qstumn/VerticalTabLayout)。并且除去了原先的YPagerAdapter等类，现在支持使用ViewPager的Adapter。尽可能把它当成一个ViewPager来使用吧
+
+
+[具体更细看这里](https://github.com/youngkaaa/YViewPagerDemo/releases/tag/0.4)  (`2017-4-18`)
+
+
 ### v0.3
 
-minSdkVersion调整到14
+minSdkVersion调整到14   (`2017-4-08`)
 
 ### v0.2
 
