@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -16,6 +16,7 @@
         app:orientation="horizontal"/>
 
     <LinearLayout
+        android:layout_centerHorizontal="true"
         android:id="@+id/linearIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,4 +25,27 @@
         android:orientation="horizontal">
     </LinearLayout>
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/tvTitle"
+        android:textSize="22sp"
+        android:background="#daaa"
+        android:gravity="left"
+        android:textColor="#fff"
+        android:text="tetststststtsts"
+        android:layout_below="@id/linearIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/numIndicator"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="28dp"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/circle_selected"
+        android:text="1/5"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:visibility="visible"/>
+</RelativeLayout>

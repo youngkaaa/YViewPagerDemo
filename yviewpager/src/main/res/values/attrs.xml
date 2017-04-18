@@ -6,7 +6,6 @@
             <enum name="horizontal" value="1"/>
         </attr>
         <attr name="circulatory" format="boolean"/>
-        <attr name="circulationCount" format="integer"/>
 
     </declare-styleable>
 </resources>

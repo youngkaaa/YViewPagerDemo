@@ -1,6 +1,7 @@
 package cn.youngkaaa.yviewpagerdemo;
 
 import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -9,11 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.youngkaaa.yviewpager.YPagerAdapter;
 import cn.youngkaaa.yviewpager.YViewPager;
 
 public class BannerActivity extends AppCompatActivity {
@@ -22,6 +24,9 @@ public class BannerActivity extends AppCompatActivity {
     private LinearLayout mLinearIndicator;
     private List<ImageView> mImageViews;
     private int mTotalCount = 0;
+    private TextView mTextViewTitle;
+    private List<String> mStringList;
+    private TextView mTextViewCircle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,16 +34,17 @@ public class BannerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_banner);
         mYViewPager = (YViewPager) findViewById(R.id.viewpager1);
         mLinearIndicator = (LinearLayout) findViewById(R.id.linearIndicator);
-
+        mTextViewTitle= (TextView) findViewById(R.id.tvTitle);
+        mTextViewCircle= (TextView) findViewById(R.id.numIndicator);
         initImgs();
 
 //        setIndicator(0);
 
         mYViewPager.setAdapter(new ImagePagerAdapter());
 
-        mYViewPager.setCurrentItem(0);
+        setIndicator(2);
 
-        mYViewPager.addOnPageChangeListener(new YViewPager.OnPageChangeListener() {
+        mYViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -46,7 +52,7 @@ public class BannerActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                setIndicator(position%mImageViews.size());
+                setIndicator(position);
                 Log.d(TAG,"POSITION=====>"+mYViewPager.getCurrentItem());
             }
 
@@ -69,11 +75,14 @@ public class BannerActivity extends AppCompatActivity {
             indicator.setLayoutParams(lp);
             mLinearIndicator.addView(indicator);
         }
+        mTextViewTitle.setText(mStringList.get(pos));
+        mTextViewCircle.setText(pos+1+"/"+mImageViews.size());
     }
 
 
     private void initImgs() {
         mImageViews = new ArrayList<>();
+        mStringList=new ArrayList<>();
 
         ViewPager.LayoutParams lp = new ViewPager.LayoutParams();
         lp.gravity = Gravity.LEFT;
@@ -115,15 +124,26 @@ public class BannerActivity extends AppCompatActivity {
         mImageViews.add(imageView4);
         mImageViews.add(imageView5);
         mImageViews.add(imageView6);
+        mStringList.add("youngkaaa test 1");
+        mStringList.add("hahahahha");
+        mStringList.add("yyyyyyyyyyyyyyy");
+        mStringList.add("aaaaaaaaaaaaaa");
+        mStringList.add("pipipipipipipipipi");
+        mStringList.add("kkkkkkkkkkkkkkkkk");
+
     }
 
-    class ImagePagerAdapter extends YPagerAdapter {
+    class ImagePagerAdapter extends PagerAdapter {
         @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-//            Log.d(TAG,"############instantiateItem() start############");
-//            Log.d(TAG, "position=>" + position);
+        public Object instantiateItem(ViewGroup container, final int position) {
             View img = mImageViews.get(position);
             container.addView(img);
+            img.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(BannerActivity.this, position+"", Toast.LENGTH_SHORT).show();
+                }
+            });
 //            Log.d(TAG,"############instantiateItem() end############");
             return img;
         }
@@ -140,6 +160,7 @@ public class BannerActivity extends AppCompatActivity {
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
+            ((View)object).setOnClickListener(null);
             container.removeView((View) object);
         }
     }

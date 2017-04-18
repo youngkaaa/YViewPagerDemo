@@ -3,6 +3,7 @@ package cn.youngkaaa.yviewpagerdemo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -16,8 +17,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.youngkaaa.yviewpager.YFragmentPagerAdapter;
 import cn.youngkaaa.yviewpager.YViewPager;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.setAdapter(new FragmentAdapter(getSupportFragmentManager()));
 
         mViewPager.setPageMargin(10);
-        mViewPager.addOnPageChangeListener(new YViewPager.OnPageChangeListener() {
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 Log.d(TAG, "onPageScrolled() position=>" + position + ",positionOffset=>" + positionOffset +
@@ -69,13 +70,13 @@ public class MainActivity extends AppCompatActivity {
         mButtonHorizontal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mViewPager.setDirection(YViewPager.HORIZONTAL);
+                mViewPager.setDirection(YViewPagerNew.HORIZONTAL);
             }
         });
         mButtonVertical.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mViewPager.setDirection(YViewPager.VERTICAL);
+                mViewPager.setDirection(YViewPagerNew.VERTICAL);
             }
         });
     }
@@ -140,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         mImageViews.add(imageView5);
     }
 
-    class FragmentAdapter extends YFragmentPagerAdapter {
+    class FragmentAdapter extends FragmentPagerAdapter {
 
         public FragmentAdapter(FragmentManager fm) {
             super(fm);

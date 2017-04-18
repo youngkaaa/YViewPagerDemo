@@ -1,25 +1,23 @@
 package cn.youngkaaa.yviewpagerdemo;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.youngkaaa.yviewpager.YFragmentPagerAdapter;
-import cn.youngkaaa.yviewpager.YViewPager;
-
 public class GallaryViewPager extends AppCompatActivity {
-    private YViewPager mViewPager;
+    private YViewPagerNew mViewPager;
     private List<FragmentInner> mFragments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallary_view_pager);
-        mViewPager= (YViewPager) findViewById(R.id.viewPagerGallary);
+        mViewPager= (YViewPagerNew) findViewById(R.id.viewPagerGallary);
         initData();
 
         mViewPager.setAdapter(new FragmentAdapter(getSupportFragmentManager()));
@@ -43,7 +41,7 @@ public class GallaryViewPager extends AppCompatActivity {
         mFragments.add(fragmentInner6);
     }
 
-    class FragmentAdapter extends YFragmentPagerAdapter {
+    class FragmentAdapter extends FragmentPagerAdapter {
 
         public FragmentAdapter(FragmentManager fm) {
             super(fm);

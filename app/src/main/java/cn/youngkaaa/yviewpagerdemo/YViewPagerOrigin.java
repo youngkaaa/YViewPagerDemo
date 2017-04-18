@@ -22,6 +22,7 @@ import android.support.v4.view.AbsSavedState;
 import android.support.v4.view.AccessibilityDelegateCompat;
 import android.support.v4.view.KeyEventCompat;
 import android.support.v4.view.MotionEventCompat;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.VelocityTrackerCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.WindowInsetsCompat;
@@ -55,8 +56,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import cn.youngkaaa.yviewpager.YPagerAdapter;
 
 /**
  * Layout manager that allows the user to flip left and right
@@ -101,7 +100,7 @@ import cn.youngkaaa.yviewpager.YPagerAdapter;
  * complete}
  */
 
-public class YViewPager1 extends ViewGroup {
+public class YViewPagerOrigin extends ViewGroup {
     private static final String TAG = "YViewPager1";
     private static final boolean DEBUG = false;
 
@@ -146,9 +145,9 @@ public class YViewPager1 extends ViewGroup {
         }
     }
 
-    private static final Comparator<YViewPager1.ItemInfo> COMPARATOR = new Comparator<YViewPager1.ItemInfo>() {
+    private static final Comparator<YViewPagerOrigin.ItemInfo> COMPARATOR = new Comparator<YViewPagerOrigin.ItemInfo>() {
         @Override
-        public int compare(YViewPager1.ItemInfo lhs, YViewPager1.ItemInfo rhs) {
+        public int compare(YViewPagerOrigin.ItemInfo lhs, YViewPagerOrigin.ItemInfo rhs) {
             return lhs.position - rhs.position;
         }
     };
@@ -161,12 +160,12 @@ public class YViewPager1 extends ViewGroup {
         }
     };
 
-    private final ArrayList<YViewPager1.ItemInfo> mItems = new ArrayList<YViewPager1.ItemInfo>();
-    private final YViewPager1.ItemInfo mTempItem = new YViewPager1.ItemInfo();
+    private final ArrayList<YViewPagerOrigin.ItemInfo> mItems = new ArrayList<YViewPagerOrigin.ItemInfo>();
+    private final YViewPagerOrigin.ItemInfo mTempItem = new YViewPagerOrigin.ItemInfo();
 
     private final Rect mTempRect = new Rect();
 
-    private YPagerAdapter mAdapter;
+    private PagerAdapter mAdapter;
     private int mCurItem;   // Index of currently displayed page.
     private int mRestoredCurItem = -1;
     private Parcelable mRestoredAdapterState = null;
@@ -175,7 +174,7 @@ public class YViewPager1 extends ViewGroup {
     private Scroller mScroller;
     private boolean mIsScrollStarted;
 
-    private YViewPager1.PagerObserver mObserver;
+    private YViewPagerOrigin.PagerObserver mObserver;
 
     private int mPageMargin;
     private Drawable mMarginDrawable;
@@ -256,8 +255,8 @@ public class YViewPager1 extends ViewGroup {
     private List<OnPageChangeListener> mOnPageChangeListeners;
     private OnPageChangeListener mOnPageChangeListener;
     private OnPageChangeListener mInternalPageChangeListener;
-    private List<YViewPager1.OnAdapterChangeListener> mAdapterChangeListeners;
-    private YViewPager1.PageTransformer mPageTransformer;
+    private List<YViewPagerOrigin.OnAdapterChangeListener> mAdapterChangeListeners;
+    private YViewPagerOrigin.PageTransformer mPageTransformer;
     private Method mSetChildrenDrawingOrderEnabled;
 
     private static final int DRAW_ORDER_DEFAULT = 0;
@@ -330,19 +329,19 @@ public class YViewPager1 extends ViewGroup {
          * or when it is fully stopped/idle.
          *
          * @param state The new scroll state.
-         * @see YViewPager1#SCROLL_STATE_IDLE
-         * @see YViewPager1#SCROLL_STATE_DRAGGING
-         * @see YViewPager1#SCROLL_STATE_SETTLING
+         * @see YViewPagerOrigin#SCROLL_STATE_IDLE
+         * @see YViewPagerOrigin#SCROLL_STATE_DRAGGING
+         * @see YViewPagerOrigin#SCROLL_STATE_SETTLING
          */
         void onPageScrollStateChanged(int state);
     }
 
     /**
-     * Simple implementation of the {@link YViewPager1.OnPageChangeListener} interface with stub
+     * Simple implementation of the {@link YViewPagerOrigin.OnPageChangeListener} interface with stub
      * implementations of each method. Extend this if you do not intend to override
-     * every method of {@link YViewPager1.OnPageChangeListener}.
+     * every method of {@link YViewPagerOrigin.OnPageChangeListener}.
      */
-    public static class SimpleOnPageChangeListener implements YViewPager1.OnPageChangeListener {
+    public static class SimpleOnPageChangeListener implements YViewPagerOrigin.OnPageChangeListener {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             // This space for rent
@@ -391,8 +390,8 @@ public class YViewPager1 extends ViewGroup {
          * @param oldAdapter the previously set adapter
          * @param newAdapter the newly set adapter
          */
-        void onAdapterChanged(@NonNull YViewPager1 viewPager,
-                              @Nullable YPagerAdapter oldAdapter, @Nullable YPagerAdapter newAdapter);
+        void onAdapterChanged(@NonNull YViewPagerOrigin viewPager,
+                              @Nullable PagerAdapter oldAdapter, @Nullable PagerAdapter newAdapter);
     }
 
     /**
@@ -403,7 +402,7 @@ public class YViewPager1 extends ViewGroup {
      * An example being PagerTitleStrip.</p>
      * <p>
      * <p>You can also control whether a view is a decor view but setting
-     * {@link YViewPager1.LayoutParams#isDecor} on the child's layout params.</p>
+     * {@link YViewPagerOrigin.LayoutParams#isDecor} on the child's layout params.</p>
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
@@ -411,12 +410,12 @@ public class YViewPager1 extends ViewGroup {
     public @interface DecorView {
     }
 
-    public YViewPager1(Context context) {
+    public YViewPagerOrigin(Context context) {
         super(context);
         initViewPager();
     }
 
-    public YViewPager1(Context context, AttributeSet attrs) {
+    public YViewPagerOrigin(Context context, AttributeSet attrs) {
         super(context, attrs);
         initViewPager();
     }
@@ -442,7 +441,7 @@ public class YViewPager1 extends ViewGroup {
         mCloseEnough = (int) (CLOSE_ENOUGH * density);
         mDefaultGutterSize = (int) (DEFAULT_GUTTER_SIZE * density);
 
-        ViewCompat.setAccessibilityDelegate(this, new YViewPager1.MyAccessibilityDelegate());
+        ViewCompat.setAccessibilityDelegate(this, new YViewPagerOrigin.MyAccessibilityDelegate());
 
         if (ViewCompat.getImportantForAccessibility(this)
                 == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
@@ -528,9 +527,9 @@ public class YViewPager1 extends ViewGroup {
      *
      * @param adapter Adapter to use
      */
-    public void setAdapter(YPagerAdapter adapter) {
+    public void setAdapter(PagerAdapter adapter) {
         if (mAdapter != null) {
-            mAdapter.setViewPagerObserver(null);
+//            mAdapter.setViewPagerObserver(null);
             mAdapter.startUpdate(this);
             for (int i = 0; i < mItems.size(); i++) {
                 final ItemInfo ii = mItems.get(i);
@@ -543,7 +542,7 @@ public class YViewPager1 extends ViewGroup {
             scrollTo(0, 0);
         }
 
-        final YPagerAdapter oldAdapter = mAdapter;
+        final PagerAdapter oldAdapter = mAdapter;
         mAdapter = adapter;
         mExpectedAdapterCount = 0;
 
@@ -551,7 +550,7 @@ public class YViewPager1 extends ViewGroup {
             if (mObserver == null) {
                 mObserver = new PagerObserver();
             }
-            mAdapter.setViewPagerObserver(mObserver);
+//            mAdapter.setViewPagerObserver(mObserver);
             mPopulatePending = false;
             final boolean wasFirstLayout = mFirstLayout;
             mFirstLayout = true;
@@ -601,7 +600,7 @@ public class YViewPager1 extends ViewGroup {
      *
      * @return The currently registered PagerAdapter
      */
-    public YPagerAdapter getAdapter() {
+    public PagerAdapter getAdapter() {
         return mAdapter;
     }
 
@@ -610,7 +609,7 @@ public class YViewPager1 extends ViewGroup {
      *
      * @param listener listener to add
      */
-    public void addOnAdapterChangeListener(@NonNull YViewPager1.OnAdapterChangeListener listener) {
+    public void addOnAdapterChangeListener(@NonNull YViewPagerOrigin.OnAdapterChangeListener listener) {
         if (mAdapterChangeListeners == null) {
             mAdapterChangeListeners = new ArrayList<>();
         }
@@ -619,11 +618,11 @@ public class YViewPager1 extends ViewGroup {
 
     /**
      * Remove a listener that was previously added via
-     * {@link #addOnAdapterChangeListener(YViewPager1.OnAdapterChangeListener)}.
+     * {@link #addOnAdapterChangeListener(YViewPagerOrigin.OnAdapterChangeListener)}.
      *
      * @param listener listener to remove
      */
-    public void removeOnAdapterChangeListener(@NonNull YViewPager1.OnAdapterChangeListener listener) {
+    public void removeOnAdapterChangeListener(@NonNull YViewPagerOrigin.OnAdapterChangeListener listener) {
         if (mAdapterChangeListeners != null) {
             mAdapterChangeListeners.remove(listener);
         }
@@ -825,20 +824,20 @@ public class YViewPager1 extends ViewGroup {
 
     /**
      * Set a listener that will be invoked whenever the page changes or is incrementally
-     * scrolled. See {@link YViewPager1.OnPageChangeListener}.
+     * scrolled. See {@link YViewPagerOrigin.OnPageChangeListener}.
      *
      * @param listener Listener to set
-     * @deprecated Use {@link #addOnPageChangeListener(YViewPager1.OnPageChangeListener)}
-     * and {@link #removeOnPageChangeListener(YViewPager1.OnPageChangeListener)} instead.
+     * @deprecated Use {@link #addOnPageChangeListener(YViewPagerOrigin.OnPageChangeListener)}
+     * and {@link #removeOnPageChangeListener(YViewPagerOrigin.OnPageChangeListener)} instead.
      */
     @Deprecated
-    public void setOnPageChangeListener(YViewPager1.OnPageChangeListener listener) {
+    public void setOnPageChangeListener(YViewPagerOrigin.OnPageChangeListener listener) {
         mOnPageChangeListener = listener;
     }
 
     /**
      * Add a listener that will be invoked whenever the page changes or is incrementally
-     * scrolled. See {@link YViewPager1.OnPageChangeListener}.
+     * scrolled. See {@link YViewPagerOrigin.OnPageChangeListener}.
      * <p>
      * <p>Components that add a listener should take care to remove it when finished.
      * Other components that take ownership of a view may call {@link #clearOnPageChangeListeners()}
@@ -846,7 +845,7 @@ public class YViewPager1 extends ViewGroup {
      *
      * @param listener listener to add
      */
-    public void addOnPageChangeListener(YViewPager1.OnPageChangeListener listener) {
+    public void addOnPageChangeListener(YViewPagerOrigin.OnPageChangeListener listener) {
         if (mOnPageChangeListeners == null) {
             mOnPageChangeListeners = new ArrayList<>();
         }
@@ -855,11 +854,11 @@ public class YViewPager1 extends ViewGroup {
 
     /**
      * Remove a listener that was previously added via
-     * {@link #addOnPageChangeListener(YViewPager1.OnPageChangeListener)}.
+     * {@link #addOnPageChangeListener(YViewPagerOrigin.OnPageChangeListener)}.
      *
      * @param listener listener to remove
      */
-    public void removeOnPageChangeListener(YViewPager1.OnPageChangeListener listener) {
+    public void removeOnPageChangeListener(YViewPagerOrigin.OnPageChangeListener listener) {
         if (mOnPageChangeListeners != null) {
             mOnPageChangeListeners.remove(listener);
         }
@@ -875,7 +874,7 @@ public class YViewPager1 extends ViewGroup {
     }
 
     /**
-     * Set a {@link YViewPager1.PageTransformer} that will be called for each attached page whenever
+     * Set a {@link YViewPagerOrigin.PageTransformer} that will be called for each attached page whenever
      * the scroll position is changed. This allows the application to apply custom property
      * transformations to each page, overriding the default sliding look and feel.
      * <p>
@@ -886,7 +885,7 @@ public class YViewPager1 extends ViewGroup {
      *                            to be drawn from last to first instead of first to last.
      * @param transformer         PageTransformer that will modify each page's animation properties
      */
-    public void setPageTransformer(boolean reverseDrawingOrder, YViewPager1.PageTransformer transformer) {
+    public void setPageTransformer(boolean reverseDrawingOrder, YViewPagerOrigin.PageTransformer transformer) {
         if (Build.VERSION.SDK_INT >= 11) {
             final boolean hasTransformer = transformer != null;
             final boolean needsPopulate = hasTransformer != (mPageTransformer != null);
@@ -927,7 +926,7 @@ public class YViewPager1 extends ViewGroup {
     protected int getChildDrawingOrder(int childCount, int i) {
         final int index = mDrawingOrder == DRAW_ORDER_REVERSE ? childCount - 1 - i : i;
         final int result =
-                ((YViewPager1.LayoutParams) mDrawingOrderedChildren.get(index).getLayoutParams()).childIndex;
+                ((YViewPagerOrigin.LayoutParams) mDrawingOrderedChildren.get(index).getLayoutParams()).childIndex;
         return result;
     }
 
@@ -937,8 +936,8 @@ public class YViewPager1 extends ViewGroup {
      * @param listener Listener to set
      * @return The old listener that was set, if any.
      */
-    YViewPager1.OnPageChangeListener setInternalPageChangeListener(YViewPager1.OnPageChangeListener listener) {
-        YViewPager1.OnPageChangeListener oldListener = mInternalPageChangeListener;
+    YViewPagerOrigin.OnPageChangeListener setInternalPageChangeListener(YViewPagerOrigin.OnPageChangeListener listener) {
+        YViewPagerOrigin.OnPageChangeListener oldListener = mInternalPageChangeListener;
         mInternalPageChangeListener = listener;
         return oldListener;
     }
@@ -1254,14 +1253,14 @@ public class YViewPager1 extends ViewGroup {
 
         boolean isUpdating = false;
         for (int i = 0; i < mItems.size(); i++) {
-            final YViewPager1.ItemInfo ii = mItems.get(i);
+            final YViewPagerOrigin.ItemInfo ii = mItems.get(i);
             final int newPos = mAdapter.getItemPosition(ii.object);
 
-            if (newPos == YPagerAdapter.POSITION_UNCHANGED) {
+            if (newPos == PagerAdapter.POSITION_UNCHANGED) {
                 continue;
             }
 
-            if (newPos == YPagerAdapter.POSITION_NONE) {
+            if (newPos == PagerAdapter.POSITION_NONE) {
                 mItems.remove(i);
                 i--;
 
@@ -1303,7 +1302,7 @@ public class YViewPager1 extends ViewGroup {
             final int childCount = getChildCount();
             for (int i = 0; i < childCount; i++) {
                 final View child = getChildAt(i);
-                final YViewPager1.LayoutParams lp = (YViewPager1.LayoutParams) child.getLayoutParams();
+                final YViewPagerOrigin.LayoutParams lp = (YViewPagerOrigin.LayoutParams) child.getLayoutParams();
                 if (!lp.isDecor) {
                     lp.widthFactor = 0.f;
                 }
@@ -1842,7 +1841,7 @@ public class YViewPager1 extends ViewGroup {
      * 第四页的范围就是: [offset,widthFactor+offset+marginOffset]==>[3f,4f]
      * 第五页的范围就是: [offset,widthFactor+offset+marginOffset]==>[4f,5f]
      * <p>
-     * 其中marginOffset一般为0，除非你调用了{@link YViewPager1#setPageMargin(int)}方法 ，marginOffset=mPageMargin/clientWidth
+     * 其中marginOffset一般为0，除非你调用了{@link YViewPagerOrigin#setPageMargin(int)}方法 ，marginOffset=mPageMargin/clientWidth
      * 其中1f,2f...是该页的实际显示宽度除以clientWidth得到的，而clientWidth=measuredWidth-paddingLeft-paddingRight
      *
      * @param curItem    当前选中的curItem，即用户调用populate(index)中index对应的那个ItemInfo
@@ -2094,16 +2093,16 @@ public class YViewPager1 extends ViewGroup {
                     + " position=" + position + "}";
         }
 
-        public static final Creator<YViewPager1.SavedState> CREATOR = ParcelableCompat.newCreator(
-                new ParcelableCompatCreatorCallbacks<YViewPager1.SavedState>() {
+        public static final Creator<YViewPagerOrigin.SavedState> CREATOR = ParcelableCompat.newCreator(
+                new ParcelableCompatCreatorCallbacks<YViewPagerOrigin.SavedState>() {
                     @Override
-                    public YViewPager1.SavedState createFromParcel(Parcel in, ClassLoader loader) {
-                        return new YViewPager1.SavedState(in, loader);
+                    public YViewPagerOrigin.SavedState createFromParcel(Parcel in, ClassLoader loader) {
+                        return new YViewPagerOrigin.SavedState(in, loader);
                     }
 
                     @Override
-                    public YViewPager1.SavedState[] newArray(int size) {
-                        return new YViewPager1.SavedState[size];
+                    public YViewPagerOrigin.SavedState[] newArray(int size) {
+                        return new YViewPagerOrigin.SavedState[size];
                     }
                 });
 
@@ -2121,7 +2120,7 @@ public class YViewPager1 extends ViewGroup {
     @Override
     public Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
-        YViewPager1.SavedState ss = new YViewPager1.SavedState(superState);
+        YViewPagerOrigin.SavedState ss = new YViewPagerOrigin.SavedState(superState);
         ss.position = mCurItem;
         if (mAdapter != null) {
             ss.adapterState = mAdapter.saveState();
@@ -2131,12 +2130,12 @@ public class YViewPager1 extends ViewGroup {
 
     @Override
     public void onRestoreInstanceState(Parcelable state) {
-        if (!(state instanceof YViewPager1.SavedState)) {
+        if (!(state instanceof YViewPagerOrigin.SavedState)) {
             super.onRestoreInstanceState(state);
             return;
         }
 
-        YViewPager1.SavedState ss = (YViewPager1.SavedState) state;
+        YViewPagerOrigin.SavedState ss = (YViewPagerOrigin.SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
 
         if (mAdapter != null) {
@@ -2158,7 +2157,7 @@ public class YViewPager1 extends ViewGroup {
         if (!checkLayoutParams(params)) {
             params = generateLayoutParams(params);
         }
-        final YViewPager1.LayoutParams lp = (YViewPager1.LayoutParams) params;
+        final YViewPagerOrigin.LayoutParams lp = (YViewPagerOrigin.LayoutParams) params;
         // Any views added via inflation should be classed as part of the decor
         lp.isDecor |= isDecorView(child);
         if (mInLayout) {
@@ -2182,7 +2181,7 @@ public class YViewPager1 extends ViewGroup {
 
     private static boolean isDecorView(@NonNull View view) {
         Class<?> clazz = view.getClass();
-        return clazz.getAnnotation(YViewPager1.DecorView.class) != null;
+        return clazz.getAnnotation(YViewPagerOrigin.DecorView.class) != null;
     }
 
     @Override
@@ -2199,7 +2198,7 @@ public class YViewPager1 extends ViewGroup {
      * 判断是通过遍历mItems对象(一个ItemInfo的List实例化对象)来判断是否该child是存在于mItems中
      * 当存在时返回对应的ItemInfo对象  反之返回null
      * <p>
-     * 具体和 {@link YViewPager1#infoForPosition(int)} 方法功能类似
+     * 具体和 {@link YViewPagerOrigin#infoForPosition(int)} 方法功能类似
      *
      * @param child non-decor view
      * @return 不存在对应的ItemInfo返回null 反之返回对应的对象引用
@@ -2226,8 +2225,8 @@ public class YViewPager1 extends ViewGroup {
     }
 
     /**
-     * 该方法{@link YViewPager1#infoForChild(View)}方法功能差不多
-     * {@link YViewPager1#infoForChild(View)}是传入一个non child View 来和ItemInfo.object来判断
+     * 该方法{@link YViewPagerOrigin#infoForChild(View)}方法功能差不多
+     * {@link YViewPagerOrigin#infoForChild(View)}是传入一个non child View 来和ItemInfo.object来判断
      * 而本方法是使用position和ItemInfo.position来判断
      *
      * @param position
@@ -2288,7 +2287,7 @@ public class YViewPager1 extends ViewGroup {
             final View child = getChildAt(i);
             //排除掉child状态为GONE的
             if (child.getVisibility() != GONE) {
-                final LayoutParams lp = (YViewPager1.LayoutParams) child.getLayoutParams();
+                final LayoutParams lp = (YViewPagerOrigin.LayoutParams) child.getLayoutParams();
                 //将decor和 normal 区分出来
                 //todo decor这段暂时不看 因为decor我也没搞懂在viewpager中是啥东西
                 if (lp != null && lp.isDecor) {
@@ -2332,9 +2331,9 @@ public class YViewPager1 extends ViewGroup {
                         }
                     }
                     //和上面处理width的流程是一样的
-                    if (lp.height != YViewPager1.LayoutParams.WRAP_CONTENT) {
+                    if (lp.height != YViewPagerOrigin.LayoutParams.WRAP_CONTENT) {
                         heightMode = MeasureSpec.EXACTLY;
-                        if (lp.height != YViewPager1.LayoutParams.MATCH_PARENT) {
+                        if (lp.height != YViewPagerOrigin.LayoutParams.MATCH_PARENT) {
                             heightSize = lp.height;
                         }
                     }
@@ -2428,7 +2427,7 @@ public class YViewPager1 extends ViewGroup {
                 scrollTo(newOffsetPixels, getScrollY());
             }
         } else {
-            final YViewPager1.ItemInfo ii = infoForPosition(mCurItem);
+            final YViewPagerOrigin.ItemInfo ii = infoForPosition(mCurItem);
             final float scrollOffset = ii != null ? Math.min(ii.offset, mLastOffset) : 0;
             final int scrollPos =
                     (int) (scrollOffset * (width - getPaddingLeft() - getPaddingRight()));
@@ -2492,7 +2491,7 @@ public class YViewPager1 extends ViewGroup {
             final View child = getChildAt(i);
             //同理先排除状态为GONE的
             if (child.getVisibility() != GONE) {
-                final YViewPager1.LayoutParams lp = (YViewPager1.LayoutParams) child.getLayoutParams();
+                final YViewPagerOrigin.LayoutParams lp = (YViewPagerOrigin.LayoutParams) child.getLayoutParams();
                 int childLeft = 0;
                 int childTop = 0;
                 if (lp.isDecor) {
@@ -2574,7 +2573,7 @@ public class YViewPager1 extends ViewGroup {
             final View child = getChildAt(i);
             //排除掉view状态为GONE的
             if (child.getVisibility() != GONE) {
-                final YViewPager1.LayoutParams lp = (YViewPager1.LayoutParams) child.getLayoutParams();
+                final YViewPagerOrigin.LayoutParams lp = (YViewPagerOrigin.LayoutParams) child.getLayoutParams();
                 //ItemInfo 是 本类内部封装的一个静态类 内部存在五个属性
                 // TODO: 2017/2/10  ItemInfo
                 ItemInfo ii;
@@ -2879,7 +2878,7 @@ public class YViewPager1 extends ViewGroup {
             final int childCount = getChildCount();
             for (int i = 0; i < childCount; i++) {
                 final View child = getChildAt(i);
-                final LayoutParams lp = (YViewPager1.LayoutParams) child.getLayoutParams();
+                final LayoutParams lp = (YViewPagerOrigin.LayoutParams) child.getLayoutParams();
                 //筛选掉不是decor view 的
                 if (!lp.isDecor) continue;
 
@@ -2970,7 +2969,7 @@ public class YViewPager1 extends ViewGroup {
             final int childCount = getChildCount();
             for (int i = 0; i < childCount; i++) {
                 final View child = getChildAt(i);
-                final YViewPager1.LayoutParams lp = (YViewPager1.LayoutParams) child.getLayoutParams();
+                final YViewPagerOrigin.LayoutParams lp = (YViewPagerOrigin.LayoutParams) child.getLayoutParams();
                 //筛选掉不是decor view 的
                 if (!lp.isDecor) continue;
 
@@ -3071,7 +3070,7 @@ public class YViewPager1 extends ViewGroup {
         }
         if (mOnPageChangeListeners != null) {
             for (int i = 0, z = mOnPageChangeListeners.size(); i < z; i++) {
-                YViewPager1.OnPageChangeListener listener = mOnPageChangeListeners.get(i);
+                YViewPagerOrigin.OnPageChangeListener listener = mOnPageChangeListeners.get(i);
                 if (listener != null) {
                     listener.onPageScrollStateChanged(state);
                 }
@@ -3931,8 +3930,8 @@ public class YViewPager1 extends ViewGroup {
             targetPage = currentPage + (int) (pageOffset + truncator);
         }
         if (mItems.size() > 0) {
-            final YViewPager1.ItemInfo firstItem = mItems.get(0);
-            final YViewPager1.ItemInfo lastItem = mItems.get(mItems.size() - 1);
+            final YViewPagerOrigin.ItemInfo firstItem = mItems.get(0);
+            final YViewPagerOrigin.ItemInfo lastItem = mItems.get(mItems.size() - 1);
             // Only let the user target pages we have items for
             targetPage = Math.max(firstItem.position, Math.min(targetPage, lastItem.position));
         }
@@ -4538,7 +4537,7 @@ public class YViewPager1 extends ViewGroup {
             for (int i = 0; i < getChildCount(); i++) {
                 final View child = getChildAt(i);
                 if (child.getVisibility() == VISIBLE) {
-                    YViewPager1.ItemInfo ii = infoForChild(child);
+                    YViewPagerOrigin.ItemInfo ii = infoForChild(child);
                     if (ii != null && ii.position == mCurItem) {
                         child.addFocusables(views, direction, focusableMode);
                     }
@@ -4578,7 +4577,7 @@ public class YViewPager1 extends ViewGroup {
         for (int i = 0; i < getChildCount(); i++) {
             final View child = getChildAt(i);
             if (child.getVisibility() == VISIBLE) {
-                YViewPager1.ItemInfo ii = infoForChild(child);
+                YViewPagerOrigin.ItemInfo ii = infoForChild(child);
                 if (ii != null && ii.position == mCurItem) {
                     child.addTouchables(views);
                 }
@@ -4608,7 +4607,7 @@ public class YViewPager1 extends ViewGroup {
         for (int i = index; i != end; i += increment) {
             View child = getChildAt(i);
             if (child.getVisibility() == VISIBLE) {
-                YViewPager1.ItemInfo ii = infoForChild(child);
+                YViewPagerOrigin.ItemInfo ii = infoForChild(child);
                 if (ii != null && ii.position == mCurItem) {
                     if (child.requestFocus(direction, previouslyFocusedRect)) {
                         return true;
@@ -4631,7 +4630,7 @@ public class YViewPager1 extends ViewGroup {
         for (int i = 0; i < childCount; i++) {
             final View child = getChildAt(i);
             if (child.getVisibility() == VISIBLE) {
-                final YViewPager1.ItemInfo ii = infoForChild(child);
+                final YViewPagerOrigin.ItemInfo ii = infoForChild(child);
                 if (ii != null && ii.position == mCurItem
                         && child.dispatchPopulateAccessibilityEvent(event)) {
                     return true;
@@ -4644,7 +4643,7 @@ public class YViewPager1 extends ViewGroup {
 
     @Override
     protected ViewGroup.LayoutParams generateDefaultLayoutParams() {
-        return new YViewPager1.LayoutParams();
+        return new YViewPagerOrigin.LayoutParams();
     }
 
     @Override
@@ -4654,12 +4653,12 @@ public class YViewPager1 extends ViewGroup {
 
     @Override
     protected boolean checkLayoutParams(ViewGroup.LayoutParams p) {
-        return p instanceof YViewPager1.LayoutParams && super.checkLayoutParams(p);
+        return p instanceof YViewPagerOrigin.LayoutParams && super.checkLayoutParams(p);
     }
 
     @Override
     public ViewGroup.LayoutParams generateLayoutParams(AttributeSet attrs) {
-        return new YViewPager1.LayoutParams(getContext(), attrs);
+        return new YViewPagerOrigin.LayoutParams(getContext(), attrs);
     }
 
     class MyAccessibilityDelegate extends AccessibilityDelegateCompat {
@@ -4667,7 +4666,7 @@ public class YViewPager1 extends ViewGroup {
         @Override
         public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
             super.onInitializeAccessibilityEvent(host, event);
-            event.setClassName(YViewPager1.class.getName());
+            event.setClassName(YViewPagerOrigin.class.getName());
             final AccessibilityRecordCompat recordCompat =
                     AccessibilityEventCompat.asRecord(event);
             recordCompat.setScrollable(canScroll());
@@ -4682,7 +4681,7 @@ public class YViewPager1 extends ViewGroup {
         @Override
         public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
             super.onInitializeAccessibilityNodeInfo(host, info);
-            info.setClassName(YViewPager1.class.getName());
+            info.setClassName(YViewPagerOrigin.class.getName());
             info.setScrollable(canScroll());
             if (canScrollHorizontally(1)) {
                 info.addAction(AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD);

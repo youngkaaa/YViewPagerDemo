@@ -1,4 +1,4 @@
-package cn.youngkaaa.yviewpager;
+package cn.youngkaaa.yviewpagerdemo;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -56,7 +56,7 @@ import java.util.List;
  * Contact me : 645326280@qq.com
  */
 
-public class YViewPager extends ViewPager {
+public class YViewPagerNew extends ViewPager {
     private static final String TAG = "YViewPager";
     private static final boolean DEBUG = false;
     private static final boolean USE_CACHE = false;
@@ -106,7 +106,7 @@ public class YViewPager extends ViewPager {
 
     private static final Comparator<ItemInfo> COMPARATOR = new Comparator<ItemInfo>() {
         @Override
-        public int compare(YViewPager.ItemInfo lhs, YViewPager.ItemInfo rhs) {
+        public int compare(YViewPagerNew.ItemInfo lhs, YViewPagerNew.ItemInfo rhs) {
             return lhs.position - rhs.position;
         }
     };
@@ -120,7 +120,7 @@ public class YViewPager extends ViewPager {
     };
 
     private final ArrayList<ItemInfo> mItems = new ArrayList<ItemInfo>();
-    private final YViewPager.ItemInfo mTempItem = new YViewPager.ItemInfo();
+    private final YViewPagerNew.ItemInfo mTempItem = new YViewPagerNew.ItemInfo();
     private final Rect mTempRect = new Rect();
     private PagerAdapter mAdapter;
     private int mCurItem;   // Index of currently displayed page.
@@ -207,10 +207,10 @@ public class YViewPager extends ViewPager {
     private int mDecorChildCount;
 
     private List<OnPageChangeListener> mOnPageChangeListeners;
-    private OnPageChangeListener mOnPageChangeListener;
-    private OnPageChangeListener mInternalPageChangeListener;
+    private ViewPager.OnPageChangeListener mOnPageChangeListener;
+    private ViewPager.OnPageChangeListener mInternalPageChangeListener;
     private List<OnAdapterChangeListener> mAdapterChangeListeners;
-    private PageTransformer mPageTransformer;
+    private YViewPagerNew.PageTransformer mPageTransformer;
     private Method mSetChildrenDrawingOrderEnabled;
 
     private static final int DRAW_ORDER_DEFAULT = 0;
@@ -254,14 +254,14 @@ public class YViewPager extends ViewPager {
 
     private int mScrollState = SCROLL_STATE_IDLE;
 
-    public YViewPager(Context context) {
+    public YViewPagerNew(Context context) {
         super(context);
         initStyle(context, null);
         initViewPager();
     }
 
 
-    public YViewPager(Context context, AttributeSet attrs) {
+    public YViewPagerNew(Context context, AttributeSet attrs) {
         super(context, attrs);
         initStyle(context, attrs);
         initViewPager();
@@ -302,7 +302,7 @@ public class YViewPager extends ViewPager {
         mCloseEnough = (int) (CLOSE_ENOUGH * density);
         mDefaultGutterSize = (int) (DEFAULT_GUTTER_SIZE * density);
 
-        ViewCompat.setAccessibilityDelegate(this, new YViewPager.MyAccessibilityDelegate());
+        ViewCompat.setAccessibilityDelegate(this, new YViewPagerNew.MyAccessibilityDelegate());
 
         if (ViewCompat.getImportantForAccessibility(this)
                 == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
@@ -509,7 +509,7 @@ public class YViewPager extends ViewPager {
      *
      * @param listener listener to add
      */
-    public void addOnAdapterChangeListener(OnAdapterChangeListener listener) {
+    public void addOnAdapterChangeListener(YViewPagerNew.OnAdapterChangeListener listener) {
         if (mAdapterChangeListeners == null) {
             mAdapterChangeListeners = new ArrayList<>();
         }
@@ -518,11 +518,11 @@ public class YViewPager extends ViewPager {
 
     /**
      * Remove a listener that was previously added via
-     * addOnAdapterChangeListener(OnAdapterChangeListener).
+     * {@link #addOnAdapterChangeListener(YViewPagerNew.OnAdapterChangeListener)}.
      *
      * @param listener listener to remove
      */
-    public void removeOnAdapterChangeListener(OnAdapterChangeListener listener) {
+    public void removeOnAdapterChangeListener(YViewPagerNew.OnAdapterChangeListener listener) {
         if (mAdapterChangeListeners != null) {
             mAdapterChangeListeners.remove(listener);
         }
@@ -741,19 +741,19 @@ public class YViewPager extends ViewPager {
 
     /**
      * Set a listener that will be invoked whenever the page changes or is incrementally
-     * scrolled. See OnPageChangeListener.
+     * scrolled. See {@link ViewPager.OnPageChangeListener}.
      *
      * @param listener Listener to set
-     * addOnPageChangeListener(OnPageChangeListener)
-     * and  #removeOnPageChangeListener(OnPageChangeListener)} instead.
+     * @deprecated Use {@link #addOnPageChangeListener(ViewPager.OnPageChangeListener)}
+     * and {@link #removeOnPageChangeListener(ViewPager.OnPageChangeListener)} instead.
      */
     @Deprecated
-    public void setOnPageChangeListener(OnPageChangeListener listener) {
+    public void setOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
         mOnPageChangeListener = listener;
     }
 
 
-    public void addOnPageChangeListener(OnPageChangeListener listener) {
+    public void addOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
         if (mOnPageChangeListeners == null) {
             mOnPageChangeListeners = new ArrayList<>();
         }
@@ -762,11 +762,11 @@ public class YViewPager extends ViewPager {
 
     /**
      * Remove a listener that was previously added via
-     * {addOnPageChangeListener(OnPageChangeListener)}.
+     * {@link #addOnPageChangeListener(ViewPager.OnPageChangeListener)}.
      *
      * @param listener listener to remove
      */
-    public void removeOnPageChangeListener(OnPageChangeListener listener) {
+    public void removeOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
         if (mOnPageChangeListeners != null) {
             mOnPageChangeListeners.remove(listener);
         }
@@ -782,7 +782,7 @@ public class YViewPager extends ViewPager {
     }
 
 
-    public void setPageTransformer(boolean reverseDrawingOrder, PageTransformer transformer) {
+    public void setPageTransformer(boolean reverseDrawingOrder, YViewPagerNew.PageTransformer transformer) {
         if (Build.VERSION.SDK_INT >= 11) {
             final boolean hasTransformer = transformer != null;
             final boolean needsPopulate = hasTransformer != (mPageTransformer != null);
@@ -837,8 +837,8 @@ public class YViewPager extends ViewPager {
      * @param listener Listener to set
      * @return The old listener that was set, if any.
      */
-    OnPageChangeListener setInternalPageChangeListener(OnPageChangeListener listener) {
-        OnPageChangeListener oldListener = mInternalPageChangeListener;
+    ViewPager.OnPageChangeListener setInternalPageChangeListener(ViewPager.OnPageChangeListener listener) {
+        ViewPager.OnPageChangeListener oldListener = mInternalPageChangeListener;
         mInternalPageChangeListener = listener;
         return oldListener;
     }
@@ -1119,14 +1119,14 @@ public class YViewPager extends ViewPager {
 
         boolean isUpdating = false;
         for (int i = 0; i < mItems.size(); i++) {
-            final YViewPager.ItemInfo ii = mItems.get(i);
+            final YViewPagerNew.ItemInfo ii = mItems.get(i);
             final int newPos = mAdapter.getItemPosition(ii.object);
 
             if (newPos == PagerAdapter.POSITION_UNCHANGED) {
                 continue;
             }
 
-            if (newPos == PagerAdapter.POSITION_NONE) {
+            if (newPos ==PagerAdapter.POSITION_NONE) {
                 mItems.remove(i);
                 i--;
 
@@ -1168,7 +1168,7 @@ public class YViewPager extends ViewPager {
             final int childCount = getChildCount();
             for (int i = 0; i < childCount; i++) {
                 final View child = getChildAt(i);
-                final LayoutParams lp = (LayoutParams) child.getLayoutParams();
+                final YViewPagerNew.LayoutParams lp = (YViewPagerNew.LayoutParams) child.getLayoutParams();
                 if (!lp.isDecor) {
                     setFieldValue(lp,"widthFactor",0.f);
 //                    lp.widthFactor = 0.f;
@@ -1542,10 +1542,10 @@ public class YViewPager extends ViewPager {
         final int childCount = getChildCount();
         for (int i = 0; i < childCount; i++) {
             final View child = getChildAt(i);
-            final LayoutParams lp = (LayoutParams) child.getLayoutParams();
+            final ViewPager.LayoutParams lp = (ViewPager.LayoutParams) child.getLayoutParams();
             float widthFactor = 0.0f;
             try {
-                Class<? extends LayoutParams> aClass = lp.getClass();
+                Class<? extends ViewPager.LayoutParams> aClass = lp.getClass();
                 Field field = aClass.getField("childIndex");
                 field.setAccessible(true);
                 field.set(lp, i);
@@ -1563,7 +1563,7 @@ public class YViewPager extends ViewPager {
                 final ItemInfo ii = infoForChild(child);
                 if (ii != null) {
                     try {
-                        Class<? extends LayoutParams> aClass = lp.getClass();
+                        Class<? extends ViewPager.LayoutParams> aClass = lp.getClass();
                         Field field = aClass.getField("childIndex");
                         field.setAccessible(true);
                         field.set(lp, ii.position);
@@ -1829,13 +1829,13 @@ public class YViewPager extends ViewPager {
         public static final Creator<SavedState> CREATOR = ParcelableCompat.newCreator(
                 new ParcelableCompatCreatorCallbacks<SavedState>() {
                     @Override
-                    public YViewPager.SavedState createFromParcel(Parcel in, ClassLoader loader) {
-                        return new YViewPager.SavedState(in, loader);
+                    public YViewPagerNew.SavedState createFromParcel(Parcel in, ClassLoader loader) {
+                        return new YViewPagerNew.SavedState(in, loader);
                     }
 
                     @Override
-                    public YViewPager.SavedState[] newArray(int size) {
-                        return new YViewPager.SavedState[size];
+                    public YViewPagerNew.SavedState[] newArray(int size) {
+                        return new YViewPagerNew.SavedState[size];
                     }
                 });
 
@@ -1853,7 +1853,7 @@ public class YViewPager extends ViewPager {
     @Override
     public Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
-        YViewPager.SavedState ss = new YViewPager.SavedState(superState);
+        YViewPagerNew.SavedState ss = new YViewPagerNew.SavedState(superState);
         ss.position = mCurItem;
         if (mAdapter != null) {
             ss.adapterState = mAdapter.saveState();
@@ -1863,12 +1863,12 @@ public class YViewPager extends ViewPager {
 
     @Override
     public void onRestoreInstanceState(Parcelable state) {
-        if (!(state instanceof YViewPager.SavedState)) {
+        if (!(state instanceof YViewPagerNew.SavedState)) {
             super.onRestoreInstanceState(state);
             return;
         }
 
-        YViewPager.SavedState ss = (YViewPager.SavedState) state;
+        YViewPagerNew.SavedState ss = (YViewPagerNew.SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
 
         if (mAdapter != null) {
@@ -1890,7 +1890,7 @@ public class YViewPager extends ViewPager {
         if (!checkLayoutParams(params)) {
             params = generateLayoutParams(params);
         }
-        final LayoutParams lp = (LayoutParams) params;
+        final ViewPager.LayoutParams lp = (ViewPager.LayoutParams) params;
         // Any views added via inflation should be classed as part of the decor
         lp.isDecor |= isDecorView(child);
         if (mInLayout) {
@@ -1898,7 +1898,7 @@ public class YViewPager extends ViewPager {
                 throw new IllegalStateException("Cannot add pager decor view during layout");
             }
             try {
-                Class<? extends LayoutParams> aClass = lp.getClass();
+                Class<? extends ViewPager.LayoutParams> aClass = lp.getClass();
                 Field field = aClass.getField("needsMeasure");
                 field.setAccessible(true);
                 field.set(lp, true);
@@ -1928,7 +1928,7 @@ public class YViewPager extends ViewPager {
 
     private static boolean isDecorView(View view) {
         Class<?> clazz = view.getClass();
-        return clazz.getAnnotation(DecorView.class) != null;
+        return clazz.getAnnotation(YViewPagerNew.DecorView.class) != null;
     }
 
     @Override
@@ -2008,7 +2008,7 @@ public class YViewPager extends ViewPager {
         for (int i = 0; i < size; ++i) {
             final View child = getChildAt(i);
             if (child.getVisibility() != GONE) {
-                final LayoutParams lp = (LayoutParams) child.getLayoutParams();
+                final LayoutParams lp = (YViewPagerNew.LayoutParams) child.getLayoutParams();
                 if (lp != null && lp.isDecor) {
                     final int hgrav = lp.gravity & Gravity.HORIZONTAL_GRAVITY_MASK;
                     final int vgrav = lp.gravity & Gravity.VERTICAL_GRAVITY_MASK;
@@ -2032,9 +2032,9 @@ public class YViewPager extends ViewPager {
                             widthSize = lp.width;
                         }
                     }
-                    if (lp.height != LayoutParams.WRAP_CONTENT) {
+                    if (lp.height != YViewPagerNew.LayoutParams.WRAP_CONTENT) {
                         heightMode = MeasureSpec.EXACTLY;
-                        if (lp.height != LayoutParams.MATCH_PARENT) {
+                        if (lp.height != YViewPagerNew.LayoutParams.MATCH_PARENT) {
                             heightSize = lp.height;
                         }
                     }
@@ -2178,7 +2178,7 @@ public class YViewPager extends ViewPager {
                 scrollTo(newOffsetPixels, getScrollY());
             }
         } else {
-            final YViewPager.ItemInfo ii = infoForPosition(mCurItem);
+            final YViewPagerNew.ItemInfo ii = infoForPosition(mCurItem);
             final float scrollOffset = ii != null ? Math.min(ii.offset, mLastOffset) : 0;
             final int scrollPos =
                     (int) (scrollOffset * (width - getPaddingLeft() - getPaddingRight()));
@@ -2236,7 +2236,7 @@ public class YViewPager extends ViewPager {
         for (int i = 0; i < count; i++) {
             final View child = getChildAt(i);
             if (child.getVisibility() != GONE) {
-                final LayoutParams lp = (LayoutParams) child.getLayoutParams();
+                final YViewPagerNew.LayoutParams lp = (YViewPagerNew.LayoutParams) child.getLayoutParams();
                 int childLeft = 0;
                 int childTop = 0;
                 if (lp.isDecor) {
@@ -2297,7 +2297,7 @@ public class YViewPager extends ViewPager {
         for (int i = 0; i < count; i++) {
             final View child = getChildAt(i);
             if (child.getVisibility() != GONE) {
-                final LayoutParams lp = (LayoutParams) child.getLayoutParams();
+                final YViewPagerNew.LayoutParams lp = (YViewPagerNew.LayoutParams) child.getLayoutParams();
                 // TODO: 2017/2/10  ItemInfo
                 ItemInfo ii;
                 if (!lp.isDecor && (ii = infoForChild(child)) != null) {
@@ -2507,7 +2507,7 @@ public class YViewPager extends ViewPager {
             final int childCount = getChildCount();
             for (int i = 0; i < childCount; i++) {
                 final View child = getChildAt(i);
-                final LayoutParams lp = (LayoutParams) child.getLayoutParams();
+                final LayoutParams lp = (YViewPagerNew.LayoutParams) child.getLayoutParams();
                 if (!lp.isDecor) continue;
 
                 final int hgrav = lp.gravity & Gravity.HORIZONTAL_GRAVITY_MASK;
@@ -2578,7 +2578,7 @@ public class YViewPager extends ViewPager {
             final int childCount = getChildCount();
             for (int i = 0; i < childCount; i++) {
                 final View child = getChildAt(i);
-                final LayoutParams lp = (LayoutParams) child.getLayoutParams();
+                final YViewPagerNew.LayoutParams lp = (YViewPagerNew.LayoutParams) child.getLayoutParams();
                 if (!lp.isDecor) continue;
 
                 final int vgrav = lp.gravity & Gravity.VERTICAL_GRAVITY_MASK;
@@ -2633,7 +2633,7 @@ public class YViewPager extends ViewPager {
         }
         if (mOnPageChangeListeners != null) {
             for (int i = 0, z = mOnPageChangeListeners.size(); i < z; i++) {
-                OnPageChangeListener listener = mOnPageChangeListeners.get(i);
+                ViewPager.OnPageChangeListener listener = mOnPageChangeListeners.get(i);
                 if (listener != null) {
                     listener.onPageScrolled(newPosition, offset, offsetPixels);
                 }
@@ -2651,7 +2651,7 @@ public class YViewPager extends ViewPager {
         }
         if (mOnPageChangeListeners != null) {
             for (int i = 0, z = mOnPageChangeListeners.size(); i < z; i++) {
-                OnPageChangeListener listener = mOnPageChangeListeners.get(i);
+                ViewPager.OnPageChangeListener listener = mOnPageChangeListeners.get(i);
                 if (listener != null) {
                     listener.onPageSelected(newPosition);
                 }
@@ -2668,7 +2668,7 @@ public class YViewPager extends ViewPager {
         }
         if (mOnPageChangeListeners != null) {
             for (int i = 0, z = mOnPageChangeListeners.size(); i < z; i++) {
-                OnPageChangeListener listener = mOnPageChangeListeners.get(i);
+                ViewPager.OnPageChangeListener listener = mOnPageChangeListeners.get(i);
                 if (listener != null) {
                     listener.onPageScrollStateChanged(state);
                 }
@@ -3370,8 +3370,8 @@ public class YViewPager extends ViewPager {
             targetPage = currentPage + (int) (pageOffset + truncator);
         }
         if (mItems.size() > 0) {
-            final YViewPager.ItemInfo firstItem = mItems.get(0);
-            final YViewPager.ItemInfo lastItem = mItems.get(mItems.size() - 1);
+            final YViewPagerNew.ItemInfo firstItem = mItems.get(0);
+            final YViewPagerNew.ItemInfo lastItem = mItems.get(mItems.size() - 1);
             // Only let the user target pages we have items for
             targetPage = Math.max(firstItem.position, Math.min(targetPage, lastItem.position));
         }
@@ -3944,7 +3944,7 @@ public class YViewPager extends ViewPager {
             for (int i = 0; i < getChildCount(); i++) {
                 final View child = getChildAt(i);
                 if (child.getVisibility() == VISIBLE) {
-                    YViewPager.ItemInfo ii = infoForChild(child);
+                    YViewPagerNew.ItemInfo ii = infoForChild(child);
                     if (ii != null && ii.position == mCurItem) {
                         child.addFocusables(views, direction, focusableMode);
                     }
@@ -3984,7 +3984,7 @@ public class YViewPager extends ViewPager {
         for (int i = 0; i < getChildCount(); i++) {
             final View child = getChildAt(i);
             if (child.getVisibility() == VISIBLE) {
-                YViewPager.ItemInfo ii = infoForChild(child);
+                YViewPagerNew.ItemInfo ii = infoForChild(child);
                 if (ii != null && ii.position == mCurItem) {
                     child.addTouchables(views);
                 }
@@ -4014,7 +4014,7 @@ public class YViewPager extends ViewPager {
         for (int i = index; i != end; i += increment) {
             View child = getChildAt(i);
             if (child.getVisibility() == VISIBLE) {
-                YViewPager.ItemInfo ii = infoForChild(child);
+                YViewPagerNew.ItemInfo ii = infoForChild(child);
                 if (ii != null && ii.position == mCurItem) {
                     if (child.requestFocus(direction, previouslyFocusedRect)) {
                         return true;
@@ -4037,7 +4037,7 @@ public class YViewPager extends ViewPager {
         for (int i = 0; i < childCount; i++) {
             final View child = getChildAt(i);
             if (child.getVisibility() == VISIBLE) {
-                final YViewPager.ItemInfo ii = infoForChild(child);
+                final YViewPagerNew.ItemInfo ii = infoForChild(child);
                 if (ii != null && ii.position == mCurItem
                         && child.dispatchPopulateAccessibilityEvent(event)) {
                     return true;
@@ -4050,7 +4050,7 @@ public class YViewPager extends ViewPager {
 
     @Override
     protected ViewGroup.LayoutParams generateDefaultLayoutParams() {
-        return new LayoutParams();
+        return new ViewPager.LayoutParams();
     }
 
     @Override
@@ -4060,19 +4060,20 @@ public class YViewPager extends ViewPager {
 
     @Override
     protected boolean checkLayoutParams(ViewGroup.LayoutParams p) {
-        return p instanceof LayoutParams && super.checkLayoutParams(p);
+        return p instanceof YViewPagerNew.LayoutParams && super.checkLayoutParams(p);
     }
 
     @Override
     public ViewGroup.LayoutParams generateLayoutParams(AttributeSet attrs) {
-        return new LayoutParams(getContext(), attrs);
+        return new YViewPagerNew.LayoutParams(getContext(), attrs);
     }
 
     class MyAccessibilityDelegate extends AccessibilityDelegateCompat {
 
+        @Override
         public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
             super.onInitializeAccessibilityEvent(host, event);
-            event.setClassName(YViewPager.class.getName());
+            event.setClassName(YViewPagerNew.class.getName());
             final AccessibilityRecordCompat recordCompat =
                     AccessibilityEventCompat.asRecord(event);
             recordCompat.setScrollable(canScroll());
@@ -4084,9 +4085,10 @@ public class YViewPager extends ViewPager {
             }
         }
 
+        @Override
         public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
             super.onInitializeAccessibilityNodeInfo(host, info);
-            info.setClassName(YViewPager.class.getName());
+            info.setClassName(YViewPagerNew.class.getName());
             info.setScrollable(canScroll());
             if (canScrollHorizontally(1)) {
                 info.addAction(AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD);
@@ -4096,6 +4098,7 @@ public class YViewPager extends ViewPager {
             }
         }
 
+        @Override
         public boolean performAccessibilityAction(View host, int action, Bundle args) {
             if (super.performAccessibilityAction(host, action, args)) {
                 return true;

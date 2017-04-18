@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <cn.youngkaaa.yviewpager.YViewPager
+        android:id="@+id/viewpagerTaobaoAd"
+        android:layout_width="match_parent"
+        android:layout_height="268px"
+        app:orientation="vertical"
+        app:circulatory="true">
+    </cn.youngkaaa.yviewpager.YViewPager>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btnPrev"
+            android:textAllCaps="false"
+            android:text="PrevScroll"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnAfter"
+            android:textAllCaps="false"
+            android:text="AfterScroll"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+</LinearLayout>
