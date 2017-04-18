@@ -8,7 +8,7 @@ YViewPager,support horizontal and vertical,based on `support.v4.view.ViewPager`
 ### Gradle
 
 ```
-compile 'cn.youngkaaa:yviewpager:0.3'
+compile 'cn.youngkaaa:yviewpager:0.4'
 ```
 
 ### Maven
@@ -17,7 +17,7 @@ compile 'cn.youngkaaa:yviewpager:0.3'
 <dependency>
   <groupId>cn.youngkaaa</groupId>
   <artifactId>yviewpager</artifactId>
-  <version>0.2</version>
+  <version>0.4</version>
   <type>pom</type>
 </dependency>
 ```
@@ -81,10 +81,13 @@ sorry,the property of `circulatory` do not support to change by using java code.
 
 ## Version
 
+### v0.4
+
+[see here](https://github.com/youngkaaa/YViewPagerDemo/releases/tag/0.4)  (`2017-4-18`)
 
 ### v0.3
 
-minSdkVersion to 14
+minSdkVersion to 14  (`2017-4-08`)
 
 ### v0.2
 
