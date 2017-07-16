@@ -1,3 +1,5 @@
+>    由于个人原因，该仓库停止维护
+
 # YViewPagerDemo
 YViewPager,support horizontal and vertical,based on `support.v4.view.ViewPager`
 
