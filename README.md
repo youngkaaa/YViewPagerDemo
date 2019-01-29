@@ -1,4 +1,4 @@
->    由于个人原因，该仓库停止维护
+>    由于个人原因，该仓库停止维护/For personal reasons, this repository stopped maintenance
 
 # YViewPagerDemo
 YViewPager,support horizontal and vertical,based on `support.v4.view.ViewPager`
